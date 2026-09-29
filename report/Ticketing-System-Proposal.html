@@ -62,21 +62,40 @@ tr:nth-child(even) td { background: #f6f8fb; }
   padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 10pt;
 }
 @media print { .print-hint { display: none; } body { padding: 0; } }
+
+
+/* 표가 큰 섹션·참고문헌은 새 페이지에서 시작해 깔끔하게 나눈다 */
+.page-break { page-break-before: always; }
+h2, h3, h4 { page-break-after: avoid; }         /* 제목 바로 뒤에서 페이지가 끊기지 않게 */
+table, tr, pre, blockquote { page-break-inside: avoid; }  /* 표가 페이지 경계에서 잘리지 않게 */
+p, li { orphans: 2; widows: 2; }
+section { page-break-inside: auto; }
+@media print { .print-hint { display: none; } body { padding: 0; } }
 </style>
 </head>
 <body>
-<div class="print-hint">💡 브라우저에서 <b>Ctrl+P</b> (Mac: <b>Cmd+P</b>) → "<b>PDF로 저장</b>"을 선택하면 제출용 PDF가 생성됩니다.</div>
-<section><h1>Term Project Proposal — Ticketing System</h1>
+<div class="print-hint">💡 브라우저에서 <b>Ctrl+P</b> (Mac: <b>Cmd+P</b>) → "<b>PDF로 저장</b>"을 선택하면 제출용 PDF가 생성됩니다. (여백: 기본 / 배율: 기본 100% 권장)</div>
+<section class="page-section"><h1>Term Project Proposal — Ticketing System</h1>
 <blockquote><p>국민대학교 · Software Architecture · HW1 Project Proposal</p></blockquote>
 <hr/>
-<h2>1. 프로젝트 팀 명</h2>
+</section>
+<section class="page-section"><h2>1. 프로젝트 팀 명</h2>
 <p><strong>Ticketing System</strong></p>
 <hr/>
-<h2>2. 프로젝트 주제</h2>
-<p><strong>주제명:</strong> Ticketing System — 범용 선착순(First-Come-First-Served) 판매 플랫폼 (첫 도메인: 영화관 티켓 예매)</p>
-<p><strong>설명:</strong> 한정된 재고를 짧은 시간에 다수의 사용자가 동시에 구매하려는 선착순 판매 상황을 안정적으로 처리하는 범용 판매 플랫폼을 설계·구현한다. 선착순 판매는 도메인(영화 좌석, 공연 좌석, 한정판 상품)이 달라도 동시성·폭주 트래픽·공정성·정합성이라는 공통 문제를 공유한다. 본 프로젝트는 이를 해결하는 도메인 독립적 판매 코어를 만들고, 그 위에 영화관 티켓 예매 도메인을 첫 번째로 구현한다. 결제·알림 등 외부 연동은 더미(Mock)로 처리한다.</p>
+</section>
+<section class="page-section"><h2>2. 프로젝트 주제</h2>
+<p><strong>주제명:</strong> Ticketing System — 여러 분야에 두루 쓸 수 있는 선착순 판매 시스템 (첫 적용 분야: 영화관 티켓 예매)</p>
+<p><strong>설명:</strong> 수량이 한정된 상품을 짧은 시간에 많은 사람이 동시에 사려고 몰리는 "선착순 판매" 상황을 문제 없이 처리하는 시스템을 만든다. 영화 좌석, 공연 좌석, 한정판 상품처럼 파는 대상이 달라도, 선착순 판매에는 다음과 같은 공통 어려움이 있다.</p>
+<ul>
+<li><strong>동시에 몰림:</strong> 같은 좌석·상품을 여러 명이 동시에 사려고 한다.</li>
+<li><strong>순간 폭주:</strong> 판매가 열리는 순간 접속이 갑자기 몰린다.</li>
+<li><strong>순서 지키기:</strong> 먼저 온 사람이 먼저 살 수 있어야 한다.</li>
+<li><strong>재고 정확성:</strong> 결제가 실패하면 잡아둔 자리를 다시 풀어줘야 한다.</li>
+</ul>
+<p>이 공통 문제를 해결하는 <strong>공용 판매 엔진</strong>을 먼저 만들고, 그 위에 <strong>영화관 티켓 예매</strong>를 첫 번째로 올린다. 결제·문자 발송 같은 외부 기능은 실제로 연결하지 않고 <strong>가짜(테스트용)</strong> 로 대신한다.</p>
 <hr/>
-<h2>3. 팀 구성</h2>
+</section>
+<section class="page-section page-break"><h2>3. 팀 구성</h2>
 <p><strong>1인 팀</strong>으로 진행한다.</p>
 <table>
 <thead><tr>
@@ -95,219 +114,226 @@ tr:nth-child(even) td { background: #f6f8fb; }
 </tr>
 </tbody></table>
 <ul>
-<li><strong>강점 및 경험:</strong> 소프트웨어 아키텍처·설계 원칙(SOLID/GRASP/디자인 패턴) 학습,</li>
+<li><strong>강점 및 경험:</strong> 소프트웨어 설계 원칙(SOLID, GRASP, 디자인 패턴) 학습 경험이 있고,</li>
 </ul>
-<p>Spring Boot/JPA 기반 REST API 및 관계형 DB 트랜잭션·락 학습 경험.</p>
+<p>Spring Boot와 데이터베이스를 이용한 웹 서버 개발을 공부한 경험이 있다.</p>
 <hr/>
-<h2>4. 시스템 목표 (Vision &amp; Scope)</h2>
-<p><strong>Vision:</strong> 도메인에 종속되지 않는 재사용 가능한 선착순 판매 코어를 만들어, 초과 판매 없이 (정확성), 폭주 트래픽에서도 안정적으로(가용성), 먼저 온 사용자가 먼저 사도록(공정성) 보장하는 시스템을 목표로 한다.</p>
-<p><strong>Scope:</strong></p>
+</section>
+<section class="page-section page-break"><h2>4. 시스템 목표 (Vision &amp; Scope)</h2>
+<p><strong>목표(Vision):</strong> 여러 판매 분야에 그대로 재사용할 수 있는 선착순 판매 엔진을 만든다. 이 엔진은 (1) 재고보다 많이 파는 실수가 없고(<strong>정확</strong>), (2) 사람이 몰려도 멈추지 않으며 (<strong>안정</strong>), (3) 먼저 온 사람이 먼저 사는(<strong>공정</strong>) 것을 목표로 한다.</p>
+<p><strong>범위(Scope):</strong></p>
 <ul>
-<li><strong>포함:</strong> 선착순 판매 코어(판매/재고/선점/주문), 동시성 제어, 영화관 도메인(상영/좌석/예매/발권), 간단한 인증, Mock 결제·알림.</li>
-<li><strong>제외:</strong> 실제 결제(PG)·SMS 연동, 추천·정산 등 부가 기능, 모바일 네이티브 앱.</li>
+<li><strong>이번에 만드는 것:</strong> 선착순 판매 엔진(판매·재고·자리잡기·주문), 동시 접속 처리,</li>
 </ul>
-<p><strong>As-Is / To-Be:</strong></p>
+<p>영화관 기능(상영·좌석·예매·티켓 발급), 간단한 로그인, 가짜 결제·알림.</p>
+<ul>
+<li><strong>만들지 않는 것:</strong> 실제 카드 결제·문자 발송, 추천·정산 같은 부가 기능, 스마트폰 전용 앱.</li>
+</ul>
+<p><strong>As-Is / To-Be (기존 방식 → 이번 프로젝트):</strong></p>
 <table>
 <thead><tr>
 <th>구분</th>
-<th>As-Is</th>
-<th>To-Be</th>
+<th>As-Is (기존 방식)</th>
+<th>To-Be (이번 프로젝트)</th>
 </tr></thead><tbody>
 <tr>
-<td>아키텍처</td>
-<td>도메인마다 판매 로직을 새로 구현</td>
-<td>범용 코어 + 도메인 어댑터로 재사용</td>
+<td>구조</td>
+<td>판매 분야마다 판매 기능을 매번 새로 만듦</td>
+<td>공용 엔진을 만들어 여러 분야에 재사용</td>
 </tr>
 <tr>
-<td>동시성</td>
-<td>단순 조회 후 갱신 → 초과 판매 발생</td>
-<td>원자적 재고 차감으로 초과 판매 0</td>
+<td>동시 접속</td>
+<td>재고 확인과 차감이 따로 놀아 초과 판매 발생</td>
+<td>확인·차감을 한 번에 처리해 초과 판매 없음</td>
 </tr>
 <tr>
-<td>폭주 대응</td>
-<td>오픈 순간 과부하로 장애</td>
-<td>대기열로 유입 제어</td>
+<td>순간 폭주</td>
+<td>판매 시작 순간 서버가 느려지거나 멈춤</td>
+<td>대기줄을 두어 한꺼번에 몰리지 않게 함</td>
 </tr>
 <tr>
-<td>정합성</td>
-<td>결제 실패 시 재고 누수</td>
-<td>선점 만료 시 재고 자동 복원</td>
+<td>재고 정확성</td>
+<td>결제 실패 시 자리가 묶인 채 낭비됨</td>
+<td>일정 시간 뒤 자동으로 자리를 다시 풀어줌</td>
 </tr>
 </tbody></table>
 <hr/>
-<h2>5. 시스템 개요 및 특성</h2>
-<p><strong>개요·특성:</strong></p>
+</section>
+<section class="page-section page-break"><h2>5. 시스템 개요 및 특성</h2>
+<p><strong>주요 특징:</strong></p>
 <ul>
-<li>레이어드 + 헥사고날(Ports &amp; Adapters) 구조로 코어/도메인/인프라 분리.</li>
-<li>재고 차감은 원자적 연산으로 처리하여 초과 판매를 방지.</li>
-<li>판매 오픈 시 대기열로 유입량을 제어.</li>
-<li>선점(Hold)은 TTL을 가지며 만료 시 자동 반환.</li>
-<li>결제·알림은 인터페이스 + Mock 구현으로 대체.</li>
+<li>기능을 <strong>화면 / 판매 엔진 / 저장소</strong> 등 역할별로 나누어, 서로 영향을 덜 주게 만든다.</li>
+<li>재고를 줄일 때 <strong>확인과 차감을 한 번에</strong> 처리해, 재고보다 많이 파는 일을 막는다.</li>
+<li>판매가 열리면 <strong>대기줄</strong>을 두어 접속이 한꺼번에 몰리지 않게 조절한다.</li>
+<li>자리를 잡아두면 <strong>일정 시간(예: 5분)</strong>만 유지되고, 결제하지 않으면 자동으로 풀린다.</li>
+<li>결제·알림은 실제 연결 대신 <strong>가짜 기능</strong>으로 바꿔 끼울 수 있게 만든다.</li>
 </ul>
-<p><strong>Use Case 별 Functional Requirements (FR):</strong></p>
+<p><strong>주요 기능(Use Case)별 요구사항:</strong></p>
+<blockquote><p>아래 표의 "설계 원칙" 항목은 과목에서 배우는 구조 개념(구조 스타일 / GRASP / SOLID / 디자인 패턴)을 적용 예시로 표기한 것이다.</p></blockquote>
 <table>
 <thead><tr>
-<th>Use Case</th>
-<th>하는 역할</th>
-<th>처리 정보</th>
-<th>Functional Requirements</th>
-<th>적용 Architecture/GRASP/SOLID/Design Pattern</th>
-<th>NFR (Quality Attributes)</th>
+<th>기능</th>
+<th>하는 일</th>
+<th>다루는 정보</th>
+<th>필요한 기능(FR)</th>
+<th>적용 설계 원칙</th>
+<th>품질 목표(NFR)</th>
 </tr></thead><tbody>
 <tr>
-<td>판매 조회</td>
-<td>판매(상영) 목록·상세 조회</td>
-<td>판매정보, 잔여수량</td>
-<td>목록/상세 조회, 오픈 카운트다운</td>
+<td>판매 목록 보기</td>
+<td>상영(판매) 목록·상세를 보여줌</td>
+<td>상영 정보, 남은 수량</td>
+<td>목록·상세 조회, 오픈까지 남은 시간 표시</td>
 <td>Layered / Information Expert / Repository</td>
-<td>성능</td>
+<td>빠른 응답</td>
 </tr>
 <tr>
-<td>대기열 진입</td>
-<td>몰린 사용자를 순서대로 입장</td>
-<td>사용자, 순번, 토큰</td>
-<td>대기표 발급, 순번 안내, 입장 허용</td>
+<td>대기줄 입장</td>
+<td>몰린 사람을 순서대로 입장시킴</td>
+<td>사용자, 순번, 입장권</td>
+<td>대기표 주기, 순번 알려주기, 순서대로 입장</td>
 <td>큐 / Controller / Strategy</td>
-<td>공정성, 가용성</td>
+<td>공정함, 안정성</td>
 </tr>
 <tr>
-<td>재고 선점</td>
-<td>좌석을 임시 점유</td>
-<td>좌석, 사용자, TTL</td>
-<td>원자적 재고 차감, 중복 선점 방지</td>
+<td>자리 잡기</td>
+<td>좌석을 잠시 맡아둠</td>
+<td>좌석, 사용자, 유지 시간</td>
+<td>재고를 정확히 하나만 줄이기, 중복 잡기 막기</td>
 <td>Ports&amp;Adapters / Low Coupling / State</td>
-<td>정확성, 동시성</td>
+<td>정확함, 동시 처리</td>
 </tr>
 <tr>
 <td>주문·결제</td>
-<td>선점을 구매로 확정(Mock)</td>
+<td>맡은 자리를 실제 구매로 확정(가짜 결제)</td>
 <td>주문, 금액, 결제</td>
-<td>결제 요청, 성공 시 확정·실패 시 해제</td>
+<td>결제 요청, 성공 시 확정·실패 시 자리 풀기</td>
 <td>Facade / Adapter / Template Method</td>
-<td>신뢰성, 정합성</td>
+<td>믿을 수 있음</td>
 </tr>
 <tr>
-<td>발권</td>
-<td>티켓 발급·조회</td>
+<td>티켓 발급</td>
+<td>구매 후 티켓을 발급·조회</td>
 <td>티켓, 좌석, 상영</td>
-<td>티켓 코드 발급, 예매 내역 조회</td>
+<td>티켓 번호 발급, 예매 내역 보기</td>
 <td>Factory Method / Creator</td>
-<td>유지보수성</td>
+<td>관리 쉬움</td>
 </tr>
 <tr>
 <td>판매 등록</td>
-<td>상영·좌석·재고 등록(관리자)</td>
+<td>관리자가 상영·좌석·수량 등록</td>
 <td>상영, 좌석, 가격</td>
-<td>상영·가격·오픈시각 등록, 재고 초기화</td>
+<td>상영·가격·오픈 시각 등록, 재고 설정</td>
 <td>Layered / Builder</td>
 <td>보안(권한)</td>
 </tr>
 <tr>
 <td>취소·환불</td>
-<td>예매 취소(Mock)</td>
+<td>예매를 취소(가짜 환불)</td>
 <td>주문·티켓 상태</td>
-<td>취소, 재고 복원, 환불(Mock)</td>
+<td>취소하기, 자리 되돌리기, 환불(가짜)</td>
 <td>Command / Observer</td>
-<td>정합성</td>
+<td>정확함</td>
 </tr>
 </tbody></table>
-<p><strong>추가 NFR (Quality Attributes):</strong></p>
+<p><strong>추가 품질 목표(NFR):</strong></p>
 <table>
 <thead><tr>
-<th>Quality Attribute</th>
-<th>요구 시나리오</th>
-<th>달성 전술</th>
+<th>품질 목표</th>
+<th>바라는 모습</th>
+<th>이루는 방법</th>
 </tr></thead><tbody>
 <tr>
-<td>정확성</td>
-<td>동시 요청에도 재고 초과 판매 = 0</td>
-<td>원자적 차감, 유니크 제약</td>
+<td>정확함</td>
+<td>아무리 몰려도 재고보다 많이 팔지 않음</td>
+<td>확인·차감을 한 번에 처리, 중복 방지 규칙</td>
 </tr>
 <tr>
-<td>가용성</td>
-<td>판매 오픈 피크에도 정상 응답</td>
-<td>대기열로 유입 제어, 타임아웃</td>
+<td>안정성</td>
+<td>판매 시작 순간에도 멈추지 않음</td>
+<td>대기줄로 접속 조절, 응답 지연 방지</td>
 </tr>
 <tr>
-<td>성능</td>
-<td>재고 조회·선점 빠른 응답</td>
-<td>캐시(Redis), 인덱스</td>
+<td>빠른 응답</td>
+<td>조회·자리잡기가 빠름</td>
+<td>자주 쓰는 정보 미리 저장(캐시)</td>
 </tr>
 <tr>
-<td>확장성</td>
-<td>인스턴스 수평 확장</td>
-<td>무상태 API, 분산 락</td>
+<td>확장 용이</td>
+<td>서버를 늘리면 처리량도 늘어남</td>
+<td>서버가 상태를 안 들고 있게 설계</td>
 </tr>
 <tr>
-<td>공정성</td>
-<td>요청 도착 순서대로 처리</td>
-<td>대기열 순번 토큰</td>
+<td>공정함</td>
+<td>먼저 온 사람이 먼저 삼</td>
+<td>대기줄 순번 관리</td>
 </tr>
 <tr>
-<td>정합성</td>
-<td>결제 실패 시 재고 복원</td>
-<td>선점 TTL + 보상 트랜잭션</td>
+<td>재고 정확성</td>
+<td>결제 실패 시 자리를 되돌림</td>
+<td>시간 지나면 자동 반환</td>
 </tr>
 <tr>
-<td>유지보수성</td>
-<td>새 도메인 추가 시 코어 무수정</td>
-<td>Ports &amp; Adapters, DIP</td>
+<td>관리 쉬움</td>
+<td>새 판매 분야를 쉽게 추가</td>
+<td>공용 엔진은 그대로 두고 기능만 끼움</td>
 </tr>
 <tr>
 <td>보안</td>
-<td>인증·권한 분리, 중복요청 방지</td>
-<td>JWT, 멱등키</td>
+<td>로그인·권한 구분, 중복 요청 막기</td>
+<td>로그인 토큰, 중복 요청 차단</td>
 </tr>
 </tbody></table>
 <hr/>
-<h2>6. 사용 기술 및 Framework</h2>
-<p>대규모 선착순 판매를 다루는 티켓팅 플랫폼(인터파크, Ticketmaster 등)과 한정판 판매 시스템은 공통적으로 <strong>가상 대기열, 인메모리 재고 관리, 메시지 큐 기반 비동기 처리</strong> 아키텍처를 사용한다. 본 프로젝트는 이 개념들을 참고하여 아래 기술로 구현한다.</p>
-<p><strong>참조 아키텍처 스타일:</strong> Layered, Ports &amp; Adapters(Hexagonal), Event-Driven.</p>
+</section>
+<section class="page-section page-break"><h2>6. 사용 기술 및 Framework</h2>
+<p>대규모 선착순 판매를 하는 예매 사이트(인터파크, Ticketmaster 등)와 한정판 판매 서비스들은 공통적으로 <strong>대기줄, 빠른 재고 관리, 작업을 나눠 처리하기</strong> 방식을 쓴다. 본 프로젝트도 이 방식을 참고해 아래 기술로 만든다.</p>
 <table>
 <thead><tr>
 <th>구분</th>
-<th>기술</th>
-<th>이유</th>
+<th>사용 기술</th>
+<th>선택 이유</th>
 </tr></thead><tbody>
 <tr>
-<td>Language / Framework</td>
+<td>개발 언어·틀</td>
 <td>Java 17 + Spring Boot 3</td>
-<td>트랜잭션·동시성 자료 풍부</td>
+<td>자료가 많고 배우기 좋음</td>
 </tr>
 <tr>
-<td>Persistence</td>
-<td>Spring Data JPA + PostgreSQL</td>
-<td>관계형 정합성, 락 지원</td>
+<td>데이터 저장</td>
+<td>PostgreSQL (관계형 DB)</td>
+<td>데이터를 정확하게 지켜줌</td>
 </tr>
 <tr>
-<td>Cache / Lock / Queue</td>
+<td>빠른 저장소·대기줄</td>
 <td>Redis</td>
-<td>원자 연산, 분산 락, 대기열</td>
+<td>재고 처리와 대기줄에 적합</td>
 </tr>
 <tr>
-<td>API</td>
-<td>REST (Swagger)</td>
-<td>표준적·검증 용이</td>
+<td>통신 방식</td>
+<td>REST API</td>
+<td>표준적이고 다루기 쉬움</td>
 </tr>
 <tr>
-<td>Frontend</td>
-<td>React (최소 화면)</td>
-<td>대기열·예매 흐름 데모</td>
+<td>화면(프론트)</td>
+<td>React (간단한 화면)</td>
+<td>예매 흐름을 보여주기 위함</td>
 </tr>
 <tr>
-<td>Test / Load</td>
+<td>테스트·부하 시험</td>
 <td>JUnit5, k6</td>
-<td>동시성·부하 검증</td>
+<td>동시 접속 상황을 시험</td>
 </tr>
 <tr>
-<td>Infra</td>
-<td>Docker Compose</td>
-<td>로컬 재현, 다중 인스턴스</td>
+<td>실행 환경</td>
+<td>Docker</td>
+<td>어디서나 똑같이 실행</td>
 </tr>
 </tbody></table>
-<p><strong>차용할 부분:</strong> 티켓팅 플랫폼의 가상 대기열 개념을 대기열 모듈로, 인메모리 재고 관리 개념을 Redis 재고 차감으로 구현한다.</p>
+<p><strong>참고해서 가져올 부분:</strong> 예매 사이트의 "대기줄" 개념을 대기줄 기능으로, 빠른 재고 관리 방식을 Redis를 이용한 재고 처리로 구현한다.</p>
 <hr/>
-<h2>참고문헌</h2>
+</section>
+<section class="page-section page-break"><h2>참고문헌</h2>
 <ol>
 <li>Bass, L., Clements, P., Kazman, R. <em>Software Architecture in Practice</em> (4th ed.), Addison-Wesley.</li>
 <li>Larman, C. <em>Applying UML and Patterns</em> (GRASP), Prentice Hall.</li>
