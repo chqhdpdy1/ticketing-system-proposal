@@ -244,7 +244,7 @@ tr:nth-child(even) td { background: #f6f8fb; }
 
 
 def main():
-    root = Path("/projects/sandbox/docs")
+    root = Path("/projects/sandbox/design/current")
     parts = [
         ("01-project-proposal.md", "제안서 (Project Proposal)"),
         ("02-architecture.md", "부록 A. 시스템 아키텍처 설계"),
@@ -300,7 +300,7 @@ def main():
 </body>
 </html>"""
 
-    out_path = Path("/projects/sandbox/Ticketing-System-Proposal.html")
+    out_path = Path("/projects/sandbox/design/full-design.html")
     out_path.write_text(doc, encoding="utf-8")
     print(f"OK -> {out_path} ({len(doc)} bytes)")
 

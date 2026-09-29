@@ -15,7 +15,7 @@ spec.loader.exec_module(bh)
 
 
 def main():
-    src = Path("/projects/sandbox/docs/proposal-submit.md")
+    src = Path("/projects/sandbox/report/proposal-submit.md")
     md = src.read_text(encoding="utf-8")
     body = bh.md_to_html(md)
 
@@ -36,7 +36,7 @@ def main():
 </body>
 </html>"""
 
-    out = Path("/projects/sandbox/Ticketing-System-Proposal.html")
+    out = Path("/projects/sandbox/report/Ticketing-System-Proposal.html")
     out.write_text(doc, encoding="utf-8")
     print(f"OK -> {out} ({len(doc)} bytes)")
 
