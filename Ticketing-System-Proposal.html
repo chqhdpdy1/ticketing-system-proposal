@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Ticketing System - Project Proposal</title>
+<style>
+@page { size: A4; margin: 18mm 16mm; }
+* { box-sizing: border-box; }
+body {
+  font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Nanum Gothic', sans-serif;
+  color: #1a1a1a; line-height: 1.65; font-size: 10.5pt; margin: 0 auto; max-width: 820px;
+  padding: 24px;
+}
+h1 { font-size: 20pt; color: #1b3a5c; border-bottom: 3px solid #1b3a5c; padding-bottom: 8px; margin-top: 8px; }
+h2 { font-size: 15pt; color: #1b3a5c; border-bottom: 1px solid #c8d4e0; padding-bottom: 5px; margin-top: 26px; }
+h3 { font-size: 12.5pt; color: #24557f; margin-top: 18px; }
+h4 { font-size: 11pt; color: #365e82; margin-top: 14px; }
+p { margin: 8px 0; }
+a { color: #1857a8; text-decoration: none; word-break: break-all; }
+strong { color: #12314f; }
+hr { border: none; border-top: 1px solid #d8dee6; margin: 18px 0; }
+ul, ol { margin: 6px 0 10px 0; padding-left: 26px; }
+li { margin: 3px 0; }
+blockquote {
+  margin: 10px 0; padding: 8px 16px; background: #f2f6fb;
+  border-left: 4px solid #4a7fb5; color: #33475b; border-radius: 3px;
+}
+blockquote p { margin: 4px 0; }
+code {
+  font-family: 'D2Coding','Consolas','Courier New',monospace; font-size: 9.5pt;
+  background: #eef1f5; padding: 1px 5px; border-radius: 3px; color: #b5285a;
+}
+pre {
+  background: #1e2733; color: #e6edf3; padding: 12px 14px; border-radius: 6px;
+  overflow-x: auto; font-size: 8.8pt; line-height: 1.5; margin: 10px 0;
+  white-space: pre; page-break-inside: avoid;
+}
+pre code { background: none; color: inherit; padding: 0; font-size: 8.8pt; }
+table {
+  border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 9.3pt;
+  page-break-inside: avoid;
+}
+th, td { border: 1px solid #c3ccd6; padding: 6px 9px; text-align: left; vertical-align: top; }
+th { background: #1b3a5c; color: #fff; font-weight: 600; }
+tr:nth-child(even) td { background: #f6f8fb; }
+.cover {
+  text-align: center; padding: 60px 0 40px 0; page-break-after: always;
+}
+.cover .badge { color: #4a7fb5; font-size: 12pt; letter-spacing: 2px; }
+.cover h1 { border: none; font-size: 30pt; margin: 24px 0 8px; }
+.cover .sub { font-size: 14pt; color: #33475b; margin-bottom: 40px; }
+.cover .meta { display: inline-block; text-align: left; font-size: 12pt; line-height: 2.0;
+  background: #f2f6fb; padding: 20px 40px; border-radius: 8px; border: 1px solid #d3ddea; }
+.cover .meta b { color: #1b3a5c; display: inline-block; width: 90px; }
+.toc { page-break-after: always; }
+.toc h2 { border: none; }
+.toc ol { font-size: 11pt; line-height: 2.0; }
+.doc-section { page-break-before: always; }
+.print-hint {
+  background: #fff8e1; border: 1px solid #ffe08a; color: #6b5300;
+  padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 10pt;
+}
+@media print { .print-hint { display: none; } body { padding: 0; } }
+</style>
+</head>
+<body>
+<div class="print-hint">💡 이 파일을 브라우저에서 연 뒤 <b>Ctrl+P</b> (Mac: <b>Cmd+P</b>) → 대상 "<b>PDF로 저장</b>"을 선택하면 제출용 PDF가 생성됩니다. (여백 기본, 배경 그래픽 켜기 권장)</div>
+
+    <div class="cover">
+      <div class="badge">KOOKMIN UNIVERSITY · SOFTWARE ARCHITECTURE</div>
+      <h1>Ticketing System</h1>
+      <div class="sub">범용 선착순(First-Come-First-Served) 판매 플랫폼<br/>
+      &mdash; 첫 번째 도메인: 영화관 티켓 예매 &mdash;</div>
+      <div class="meta">
+        <div><b>과제</b> HW1. Project Proposal</div>
+        <div><b>팀 명</b> Ticketing System (1인 팀)</div>
+        <div><b>이름</b> 홍석준</div>
+        <div><b>학번</b> 20213098</div>
+        <div><b>소속</b> 소프트웨어학과 4학년</div>
+      </div>
+    </div>
+    
+<div class='toc'><h2>목차</h2><ol><li><a href="#sec0">제안서 (Project Proposal)</a></li><li><a href="#sec1">부록 A. 시스템 아키텍처 설계</a></li><li><a href="#sec2">부록 B. 도메인 모델 및 데이터 설계</a></li><li><a href="#sec3">부록 C. 기술 스택 및 참조 시스템 조사</a></li></ol></div>
+<section id="sec0" class=""><h1>Term Project Proposal — Ticketing System</h1>
+<blockquote><p>국민대학교 · Software Architecture · HW1 Project Proposal 제출 양식(강의자료)에 따라 1~7 항목으로 구성한 제안서입니다.</p></blockquote>
+<hr/>
+<h2>1. 프로젝트 팀 명</h2>
+<p><strong>Ticketing System</strong></p>
+<hr/>
+<h2>2. 프로젝트 주제</h2>
+<h3>주제명</h3>
+<p><strong>Ticketing System — 범용 선착순(First-Come-First-Served) 판매 플랫폼 (첫 번째 도메인: 영화관 티켓 예매)</strong></p>
+<h3>프로젝트 설명</h3>
+<p>한정된 재고를 <strong>짧은 시간에 다수의 사용자가 동시에 구매하려는</strong> 상황(선착순 판매)을 안정적으로 처리하는 <strong>범용 판매 플랫폼</strong>을 설계·구현한다.</p>
+<p>선착순 판매는 도메인(영화 좌석, 공연 좌석, 한정판 상품)이 달라도 다음과 같은 <strong>공통 문제</strong>를 공유한다.</p>
+<ul>
+<li><strong>동시성(Concurrency):</strong> 같은 재고 단위(좌석/상품)를 여러 사용자가 동시에 구매 → <strong>정확히 1명에게만</strong> 판매되어야 함 (초과 판매 = 재고 -1 은 절대 금지).</li>
+<li><strong>폭주(Burst Traffic):</strong> 판매 오픈(예: 인기 영화 예매 시작) 순간 트래픽이 평소의 수십~수백 배로 급증.</li>
+<li><strong>공정성(Fairness):</strong> 먼저 온 요청이 먼저 처리되어야 함(대기열).</li>
+<li><strong>일관성(Consistency):</strong> 결제 실패/타임아웃 시 선점한 재고를 되돌려야 함.</li>
+</ul>
+<p>본 프로젝트는 이 공통 문제를 해결하는 <strong>도메인 독립적 판매 엔진(Core Sales Engine)</strong> 을 설계하고, 그 위에 <strong>영화관 티켓 예매 도메인</strong>을 첫 번째 어댑터로 구현한다. 이후 공연 티켓·한정판 상품 도메인은 <strong>어댑터 추가만으로 확장</strong>되도록 한다.</p>
+<ul>
+<li>결제·문자·PG 등 외부 연동은 <strong>더미(Mock)</strong> 로 처리하여 학습 목적에 집중한다.</li>
+<li>대규모 트래픽 대응(대기열, 재고 캐시, 분산 락)을 아키텍처 차원에서 다룬다.</li>
+</ul>
+<hr/>
+<h2>3. 팀 구성</h2>
+<p><strong>1인 팀</strong>으로 진행한다.</p>
+<table>
+<thead><tr>
+<th>이름</th>
+<th>학번</th>
+<th>소속</th>
+<th>학년</th>
+<th>역할</th>
+</tr></thead><tbody>
+<tr>
+<td>홍석준</td>
+<td>20213098</td>
+<td>소프트웨어학과</td>
+<td>4학년</td>
+<td>전체(설계·백엔드·인프라·문서)</td>
+</tr>
+</tbody></table>
+<h3>프로젝트에서의 역할 (1인 팀, 단계적 수행)</h3>
+<ul>
+<li><strong>아키텍처 설계:</strong> 범용 판매 코어와 도메인 어댑터 구조 설계, 아키텍처 스타일·패턴 선정.</li>
+<li><strong>백엔드 개발:</strong> 동시성 제어 엔진(재고 원자 차감·대기열·선점), 도메인 어댑터·REST API 구현.</li>
+<li><strong>인프라·검증:</strong> Redis/PostgreSQL/Docker 구성, 부하 테스트 및 관측성 세팅.</li>
+<li><strong>문서화:</strong> 제안서·설계서·검증 결과 정리.</li>
+</ul>
+<h3>강점 및 경험</h3>
+<ul>
+<li>소프트웨어학과 4학년으로 소프트웨어 아키텍처·설계 원칙(SOLID/GRASP/디자인 패턴) 학습.</li>
+<li>Spring Boot / JPA 기반 REST API 및 관계형 DB 트랜잭션·락 학습 경험.</li>
+<li>동시성 제어와 대규모 트래픽 처리 아키텍처에 대한 관심과 학습 의지.</li>
+</ul>
+<hr/>
+<h2>4. 목적하는 소프트웨어 시스템의 목표 (Vision &amp; Scope)</h2>
+<h3>4.1 Vision (비전)</h3>
+<blockquote><p>"<strong>하나의 판매 엔진으로 모든 선착순 판매를 공정하고 정확하게.</strong>"</p>
+<p>도메인에 종속되지 않는 <strong>재사용 가능한 선착순 판매 코어</strong>를 만들고, 초과 판매 없이(정확성), 폭주 트래픽에서도 죽지 않고(가용성), 먼저 온 사용자가 먼저 사도록(공정성) 보장하는 시스템을 목표로 한다.</p></blockquote>
+<h3>4.2 Scope (범위)</h3>
+<p><strong>In Scope (이번 프로젝트 범위)</strong></p>
+<ul>
+<li>범용 선착순 판매 코어 엔진 (판매 이벤트 / 재고 / 선점 / 주문)</li>
+<li>동시성 제어 (DB 비관적 락 → Redis 원자적 재고 차감 → 대기열)</li>
+<li>영화관 도메인 어댑터 (상영/좌석/예매/발권)</li>
+<li>사용자·인증(간단), 판매자(어드민) 최소 기능</li>
+<li>Mock 결제, Mock 알림</li>
+<li>부하 테스트 및 관측성(메트릭/로그) 최소 구성</li>
+</ul>
+<p><strong>Out of Scope (제외)</strong></p>
+<ul>
+<li>실제 PG(결제대행) 연동, 실제 SMS/이메일 발송</li>
+<li>추천, 광고, 정산·세금계산서 등 커머스 부가 기능</li>
+<li>모바일 네이티브 앱 (웹으로 대체)</li>
+</ul>
+<h3>4.3 As-Is / To-Be</h3>
+<table>
+<thead><tr>
+<th>구분</th>
+<th>As-Is (기존 관행)</th>
+<th>To-Be (본 프로젝트)</th>
+</tr></thead><tbody>
+<tr>
+<td>아키텍처</td>
+<td>도메인마다 판매 로직을 매번 새로 구현</td>
+<td><strong>범용 판매 코어 + 도메인 어댑터</strong>로 재사용</td>
+</tr>
+<tr>
+<td>동시성</td>
+<td>단순 <code>SELECT then UPDATE</code> → 초과 판매 발생</td>
+<td><strong>원자적 차감 + 락 + 대기열</strong>로 초과 판매 0</td>
+</tr>
+<tr>
+<td>폭주 대응</td>
+<td>오픈 순간 DB 과부하로 응답 지연/장애</td>
+<td><strong>대기열 + 캐시</strong>로 DB 부하 평탄화</td>
+</tr>
+<tr>
+<td>재고 정합성</td>
+<td>결제 실패 시 재고 누수/유령 좌석</td>
+<td><strong>TTL 선점 + 보상 트랜잭션</strong>으로 자동 복구</td>
+</tr>
+<tr>
+<td>확장성</td>
+<td>새 도메인 = 전체 재개발</td>
+<td>새 도메인 = <strong>어댑터 1개 추가</strong></td>
+</tr>
+</tbody></table>
+<hr/>
+<h2>5. 시스템 개요 및 특성</h2>
+<h3>5.1 개요 및 특성 리스트</h3>
+<ul>
+<li><strong>레이어드 + 헥사고날(Ports &amp; Adapters)</strong> 구조로 코어/도메인/인프라 분리.</li>
+<li>판매 코어는 <strong>도메인 이벤트 기반</strong>으로 도메인 어댑터와 느슨하게 결합.</li>
+<li>재고 차감은 <strong>원자적 연산</strong>(DB row lock 또는 Redis Lua)으로 초과 판매 방지.</li>
+<li>판매 오픈 시 <strong>가상 대기열(Waiting Queue)</strong> 로 유입량을 제어.</li>
+<li>선점(Hold)은 <strong>TTL</strong>을 가지며 만료 시 자동 반환(스케줄러/이벤트).</li>
+<li>결제/알림은 <strong>인터페이스 + Mock 구현체</strong>로 대체(테스트 용이).</li>
+</ul>
+<h3>5.2 Use Case 별 Functional Requirements (FR)</h3>
+<blockquote><p>강의자료 표 양식: Use Case / Role &amp; Responsibility / Attributes / FR / 적용 가능한 Architecture Style·GRASP·SOLID·Design Pattern / NFR(Quality Attributes)</p></blockquote>
+<table>
+<thead><tr>
+<th>Use Case</th>
+<th>Role &amp; Responsibility</th>
+<th>처리 정보 (Attributes)</th>
+<th>Functional Requirements</th>
+<th>Architecture / GRASP / SOLID / Design Pattern</th>
+<th>NFR (Quality Attributes)</th>
+</tr></thead><tbody>
+<tr>
+<td><strong>UC-1 판매 이벤트 조회</strong></td>
+<td>사용자가 오픈 예정/진행 중 판매(상영) 목록을 본다</td>
+<td>SalesEvent(id, title, openAt, status), Inventory 요약</td>
+<td>판매 목록/상세 조회, 오픈 카운트다운</td>
+<td>Layered / <strong>Information Expert</strong> / Repository, DTO</td>
+<td>성능(응답 300ms), 캐시 활용</td>
+</tr>
+<tr>
+<td><strong>UC-2 대기열 진입</strong></td>
+<td>오픈 순간 몰린 사용자를 순서대로 입장시킨다</td>
+<td>사용자ID, 대기순번, 토큰, 진입시각</td>
+<td>대기표 발급, 순번·예상시간 안내, 입장 허용</td>
+<td>Pipe(큐) / <strong>Controller</strong> / <strong>Strategy</strong>(입장정책)</td>
+<td>공정성(FIFO), 가용성, 확장성</td>
+</tr>
+<tr>
+<td><strong>UC-3 재고(좌석) 선점</strong></td>
+<td>사용자가 좌석/상품을 임시 점유한다</td>
+<td>Seat/Item id, hold TTL, userId</td>
+<td><strong>원자적</strong> 재고 차감, 중복 선점 방지, TTL 만료 반환</td>
+<td><strong>Ports&amp;Adapters</strong> / <strong>Low Coupling</strong> / <strong>State</strong>(재고상태)</td>
+<td><strong>정확성(초과판매 0)</strong>, 동시성, 신뢰성</td>
+</tr>
+<tr>
+<td><strong>UC-4 주문·결제(Mock)</strong></td>
+<td>선점을 확정 구매로 전환한다</td>
+<td>Order(id, amount, status), payment token</td>
+<td>결제 요청(Mock), 성공 시 확정·실패 시 선점 해제</td>
+<td><strong>Facade</strong> / <strong>Adapter</strong>(PG) / <strong>Template Method</strong></td>
+<td>신뢰성(보상 트랜잭션), 정합성</td>
+</tr>
+<tr>
+<td><strong>UC-5 발권/확인</strong></td>
+<td>구매 완료 후 티켓을 발급/조회한다</td>
+<td>Ticket(code, seat, screening)</td>
+<td>티켓 코드 발급, 예매 내역 조회</td>
+<td><strong>Factory Method</strong> / <strong>Creator</strong></td>
+<td>유지보수성, 성능</td>
+</tr>
+<tr>
+<td><strong>UC-6 판매 등록(어드민)</strong></td>
+<td>판매자가 상영/좌석/재고를 등록한다</td>
+<td>Screening, Seat layout, price, openAt</td>
+<td>상영·좌석·가격·오픈시각 등록, 재고 초기화</td>
+<td>Layered / <strong>Builder</strong> / <strong>Repository</strong></td>
+<td>보안(권한), 유지보수성</td>
+</tr>
+<tr>
+<td><strong>UC-7 취소·환불(Mock)</strong></td>
+<td>사용자가 예매를 취소한다</td>
+<td>Order/Ticket status, refund(Mock)</td>
+<td>취소 요청, 재고 복원, 환불(Mock)</td>
+<td><strong>Command</strong> / <strong>Observer</strong>(재고복원 이벤트)</td>
+<td>정합성, 신뢰성</td>
+</tr>
+</tbody></table>
+<h3>5.3 추가 NFR (Quality Attributes)</h3>
+<table>
+<thead><tr>
+<th>#</th>
+<th>Quality Attribute</th>
+<th>요구 시나리오 (측정 가능한 목표)</th>
+<th>달성 전술(Tactic)</th>
+</tr></thead><tbody>
+<tr>
+<td>NFR-1</td>
+<td><strong>정확성 / 데이터 무결성</strong></td>
+<td>동시 1만 요청에도 <strong>재고 초과 판매 = 0</strong></td>
+<td>원자적 차감(Redis Lua/DB row lock), 유니크 제약</td>
+</tr>
+<tr>
+<td>NFR-2</td>
+<td><strong>가용성(Availability)</strong></td>
+<td>판매 오픈 피크에도 오류율 &lt; 1%</td>
+<td>대기열로 유입 제어, 서킷브레이커, 타임아웃</td>
+</tr>
+<tr>
+<td>NFR-3</td>
+<td><strong>성능(Performance)</strong></td>
+<td>재고 조회 p95 &lt; 300ms, 선점 p95 &lt; 500ms</td>
+<td>캐시(Redis), 커넥션 풀, 인덱스</td>
+</tr>
+<tr>
+<td>NFR-4</td>
+<td><strong>확장성(Scalability)</strong></td>
+<td>인스턴스 수평 확장으로 처리량 선형 증가</td>
+<td>무상태 API, 분산 락, 큐</td>
+</tr>
+<tr>
+<td>NFR-5</td>
+<td><strong>공정성(Fairness)</strong></td>
+<td>요청 도착 순서대로 처리(FIFO 근사)</td>
+<td>대기열 순번 토큰</td>
+</tr>
+<tr>
+<td>NFR-6</td>
+<td><strong>일관성(Consistency)</strong></td>
+<td>결제 실패/타임아웃 시 100% 재고 복원</td>
+<td>TTL 선점 + 보상 트랜잭션 + 아웃박스</td>
+</tr>
+<tr>
+<td>NFR-7</td>
+<td><strong>유지보수성/확장성(Modifiability)</strong></td>
+<td>새 도메인 추가 시 코어 코드 수정 0</td>
+<td>Ports &amp; Adapters, DIP</td>
+</tr>
+<tr>
+<td>NFR-8</td>
+<td><strong>관측성(Observability)</strong></td>
+<td>재고/대기열/오류를 실시간 지표로 확인</td>
+<td>메트릭, 구조적 로그, 트레이스</td>
+</tr>
+<tr>
+<td>NFR-9</td>
+<td><strong>보안(Security)</strong></td>
+<td>인증·권한 분리, 봇/중복요청 방지</td>
+<td>JWT, 요청 rate limit, 멱등키</td>
+</tr>
+</tbody></table>
+<hr/>
+<h2>6. 사용 기술 및 Framework</h2>
+<blockquote><p>상세 내용은 <code>docs/02-architecture.md</code>, <code>docs/04-tech-stack.md</code> 참고.</p></blockquote>
+<h3>6.1 관심 있는 소프트웨어 시스템 조사 개요</h3>
+<p>대규모 선착순/이벤트성 판매를 다루는 대표 시스템으로 <strong>인터파크 티켓, 예스24, Ticketmaster</strong> 등 티켓팅 플랫폼과, 한정판 판매를 다루는 <strong>Nike SNKRS</strong>, 급증 트래픽을 다루는 커머스 <strong>쿠팡·배달의민족(주문)</strong> 등이 참고 대상이다. 이들은 공통적으로 <strong>대기열(Virtual Waiting Room)</strong>, <strong>인메모리 재고 캐시</strong>, <strong>메시지 큐 기반 비동기 처리</strong>, <strong>읽기/쓰기 분리</strong> 아키텍처를 사용한다.</p>
+<h3>6.2 참조 아키텍처 스타일</h3>
+<ul>
+<li><strong>Layered Architecture</strong> — Presentation / Application / Domain / Infrastructure 분리.</li>
+<li><strong>Ports &amp; Adapters (Hexagonal)</strong> — 코어를 외부(DB, PG, 도메인)로부터 격리.</li>
+<li><strong>Event-Driven</strong> — 재고 복원·발권·알림을 도메인 이벤트로 비동기 처리.</li>
+<li><strong>CQRS 경량 적용</strong> — 조회(캐시)와 명령(선점/주문) 경로 분리.</li>
+</ul>
+<h3>6.3 사용 기술 스택 (안)</h3>
+<table>
+<thead><tr>
+<th>구분</th>
+<th>기술</th>
+<th>이유</th>
+</tr></thead><tbody>
+<tr>
+<td>Language / Framework</td>
+<td><strong>Java 17 + Spring Boot 3</strong> (또는 Kotlin)</td>
+<td>트랜잭션·동시성 자료 풍부, 학습 자원 많음</td>
+</tr>
+<tr>
+<td>Persistence</td>
+<td><strong>Spring Data JPA + PostgreSQL</strong></td>
+<td>관계형 정합성, 비관적/낙관적 락 지원</td>
+</tr>
+<tr>
+<td>Cache / Lock / Queue</td>
+<td><strong>Redis</strong> (Lua 원자 연산, 분산 락, 대기열)</td>
+<td>대규모 트래픽 재고·대기열 처리 핵심</td>
+</tr>
+<tr>
+<td>Async Messaging</td>
+<td><strong>Redis Stream / (선택)Kafka</strong></td>
+<td>이벤트 기반 비동기 처리</td>
+</tr>
+<tr>
+<td>API</td>
+<td><strong>REST (OpenAPI/Swagger)</strong></td>
+<td>표준적·검증 용이</td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td><strong>React + Vite</strong> (최소 화면)</td>
+<td>대기열·예매 흐름 데모</td>
+</tr>
+<tr>
+<td>Test / Load</td>
+<td><strong>JUnit5, Testcontainers, k6/JMeter</strong></td>
+<td>동시성·부하 검증</td>
+</tr>
+<tr>
+<td>Infra</td>
+<td><strong>Docker Compose</strong></td>
+<td>로컬 재현, 다중 인스턴스 데모</td>
+</tr>
+<tr>
+<td>Observability</td>
+<td><strong>Micrometer + Prometheus + Grafana</strong></td>
+<td>재고/대기열/오류 지표</td>
+</tr>
+</tbody></table>
+<h3>6.4 조사 시스템에서 차용할 부분</h3>
+<ul>
+<li>티켓팅 플랫폼의 <strong>가상 대기열(Virtual Waiting Room)</strong> 개념 → 대기열 모듈로 구현.</li>
+<li>커머스의 <strong>인메모리 재고 차감 + 후속 DB 반영(write-behind)</strong> 패턴 차용.</li>
+<li><strong>아웃박스 패턴 / 보상 트랜잭션</strong>으로 결제-재고 정합성 확보.</li>
+</ul>
+<hr/>
+<h2>7. Reference (참고문헌)</h2>
+<ol>
+<li>Bass, L., Clements, P., Kazman, R. <em>Software Architecture in Practice</em> (4th ed.), Addison-Wesley.</li>
+<li>Larman, C. <em>Applying UML and Patterns</em> (GRASP), Prentice Hall.</li>
+<li>Gamma et al. <em>Design Patterns: Elements of Reusable OO Software</em> (GoF).</li>
+<li>Evans, E. <em>Domain-Driven Design</em>, Addison-Wesley.</li>
+<li>Redis 공식 문서 — Distributed Locks, Lua scripting, Streams. https://redis.io/docs/</li>
+<li>Spring Framework Reference — Transaction Management, Locking. https://docs.spring.io/</li>
+<li>Richardson, C. <em>Microservices Patterns</em> (Saga, Outbox), Manning.</li>
+<li>Cloudflare / AWS "Virtual Waiting Room" 아키텍처 문서. https://aws.amazon.com/solutions/implementations/virtual-waiting-room-on-aws/</li>
+</ol>
+<blockquote><p>※ 참고 자료의 서지정보는 실제 인용 판본/URL 접속일에 맞춰 최종 확정하세요.</p></blockquote></section><section id="sec1" class="doc-section"><h1>시스템 아키텍처 설계</h1>
+<blockquote><p>범용 선착순(FCFS) 판매 플랫폼 — 첫 도메인: 영화관 티켓 예매 본 문서는 아키텍처 스타일, 컴포넌트 구조, 대규모 트래픽 대응 설계, 핵심 시나리오를 다룬다.</p></blockquote>
+<hr/>
+<h2>1. 아키텍처 목표(요약)</h2>
+<table>
+<thead><tr>
+<th>목표</th>
+<th>핵심 결정</th>
+</tr></thead><tbody>
+<tr>
+<td><strong>초과 판매 0</strong></td>
+<td>재고 차감을 단일 원자적 연산으로 (Redis Lua / DB row-lock)</td>
+</tr>
+<tr>
+<td><strong>폭주 대응</strong></td>
+<td>가상 대기열로 유입 평탄화 → DB/코어 보호</td>
+</tr>
+<tr>
+<td><strong>정합성</strong></td>
+<td>TTL 선점 + 보상 트랜잭션(Saga) + Outbox</td>
+</tr>
+<tr>
+<td><strong>확장성</strong></td>
+<td>무상태 API + 분산 락 + 수평 확장</td>
+</tr>
+<tr>
+<td><strong>도메인 확장</strong></td>
+<td>코어와 도메인을 Ports &amp; Adapters로 분리</td>
+</tr>
+</tbody></table>
+<hr/>
+<h2>2. 아키텍처 스타일</h2>
+<p>본 시스템은 <strong>복합 스타일</strong>을 사용한다.</p>
+<ol>
+<li><strong>Layered Architecture</strong> — 관심사 분리(표현/응용/도메인/인프라).</li>
+<li><strong>Ports &amp; Adapters (Hexagonal)</strong> — 판매 코어를 외부 기술·도메인으로부터 격리.</li>
+<li><strong>Event-Driven</strong> — 재고 복원/발권/알림을 도메인 이벤트로 비동기 처리.</li>
+<li><strong>경량 CQRS</strong> — 조회(캐시 우선)와 명령(선점/주문) 경로 분리.</li>
+</ol>
+<h3>왜 Hexagonal 인가 (범용성의 핵심)</h3>
+<p>"범용 선착순 판매"의 요구사항은 <strong>코어 로직은 도메인을 몰라야 한다</strong>는 것이다. 코어는 <code>재고를 원자적으로 1 줄인다</code>만 알고, 그 재고가 "영화 좌석"인지 "한정판 신발"인지는 <strong>도메인 어댑터</strong>가 결정한다. 이를 위해 코어는 <strong>포트(인터페이스)</strong> 만 노출하고, 도메인/기술은 <strong>어댑터</strong>로 그 포트를 구현한다 → <strong>DIP(의존성 역전)</strong> 적용.</p>
+<hr/>
+<h2>3. 상위 수준 구성도 (C4 - Context / Container)</h2>
+<pre><code>                          ┌─────────────────────────────────────────────┐
+                          │                 Client (Web)                  │
+                          │        React SPA (대기열/예매/좌석맵)          │
+                          └───────────────────────┬───────────────────────┘
+                                                  │ HTTPS / REST
+                          ┌───────────────────────▼───────────────────────┐
+                          │                  API Gateway                    │
+                          │      (인증 JWT, Rate Limit, 라우팅)             │
+                          └───────┬───────────────────────────────┬────────┘
+                                  │                               │
+             ┌────────────────────▼─────────┐        ┌────────────▼───────────────┐
+             │       Waiting Queue Service   │        │      Sales API (Core)        │
+             │  - 대기표 발급/입장 토큰        │        │  - 판매/재고/선점/주문       │
+             │  - Redis Sorted Set 순번        │        │  - 도메인 어댑터 로딩         │
+             └───────────────┬───────────────┘        └───┬──────────────┬──────────┘
+                             │                            │              │
+                             │           ┌────────────────▼───┐   ┌──────▼──────────┐
+                             └──────────►│      Redis          │   │   PostgreSQL     │
+                                         │  - 재고 캐시(원자차감)│   │  - 영속 상태     │
+                                         │  - 분산 락           │   │  - 주문/결제원장 │
+                                         │  - 대기열/스트림      │   └──────┬──────────┘
+                                         └──────────┬──────────┘          │
+                                                    │ Stream(event)        │
+                                    ┌───────────────▼──────────────┐       │
+                                    │        Worker / Consumer       │◄──────┘
+                                    │  - 재고 DB 반영(write-behind)  │
+                                    │  - 발권, 알림(Mock)            │
+                                    │  - 선점 만료 복원, 보상 트랜잭션│
+                                    └────────────────────────────────┘</code></pre>
+<hr/>
+<h2>4. 논리 컴포넌트 (레이어 + 헥사고날)</h2>
+<pre><code>┌──────────────────────────── Presentation Layer ────────────────────────────┐
+│  REST Controllers  |  DTO / Request-Response  |  Exception Handler          │
+└──────────────────────────────────┬──────────────────────────────────────────┘
+                                    │  (uses Application Ports)
+┌──────────────────────────── Application Layer ─────────────────────────────┐
+│  Use Case Services:  EnterQueue, HoldStock, PlaceOrder, ConfirmPayment,     │
+│                      CancelOrder, RegisterSalesEvent                        │
+│  Transaction 경계 / 오케스트레이션 / 이벤트 발행                             │
+└──────────────────────────────────┬──────────────────────────────────────────┘
+                                    │  (depends on Domain + Ports)
+┌───────────────── Domain Layer (Core, 도메인 비종속) ────────────────────────┐
+│  Entities/Aggregates:  SalesEvent, Inventory, StockUnit, Hold, Order        │
+│  Domain Services:      StockDeductionPolicy, FairnessPolicy                 │
+│  Domain Events:        StockHeld, OrderPlaced, PaymentConfirmed,            │
+│                        HoldExpired, StockRestored                           │
+│  Ports (interfaces):                                                        │
+│    - StockRepositoryPort        (재고 원자 차감/복원)                        │
+│    - QueuePort                  (대기열)                                     │
+│    - PaymentPort                (결제)                                       │
+│    - NotificationPort           (알림)                                       │
+│    - DomainDescriptorPort       (도메인별 재고 단위 의미 해석)               │
+└──────────────────────────────────┬──────────────────────────────────────────┘
+                                    │  (implemented by Adapters)
+┌──────────────────── Infrastructure / Adapters Layer ───────────────────────┐
+│  Persistence Adapter (JPA/PostgreSQL)   │  Redis Adapter (Lua/Lock/Queue)   │
+│  Payment Adapter (Mock)                 │  Notification Adapter (Mock)      │
+│  ── Domain Adapters ──                                                       │
+│    CinemaAdapter (상영/좌석)  |  ConcertAdapter(향후)  |  ProductAdapter(향후)│
+└──────────────────────────────────────────────────────────────────────────────┘</code></pre>
+<h3>핵심 포트 정의 (개념)</h3>
+<pre><code class="lang-java">// 재고 포트: 코어는 "원자적으로 1 줄인다"만 안다
+public interface StockRepositoryPort {
+    HoldResult tryHold(long stockUnitId, String userId, Duration ttl); // 원자적
+    void restore(long stockUnitId);                                    // 복원
+    int remaining(long salesEventId);                                  // 잔여 조회(캐시)
+}
+
+// 도메인 기술자 포트: 재고 단위가 "무엇"인지 도메인이 해석
+public interface DomainDescriptorPort {
+    String domainType();                       // "CINEMA", "CONCERT", "PRODUCT"
+    StockUnitView describe(long stockUnitId);  // 좌석 A12 / 신발 270mm 등
+    boolean supportsSeatSelection();           // 좌석 지정 여부
+}</code></pre>
+<blockquote><p>새 도메인 추가 = <code>DomainDescriptorPort</code> 구현 + 재고 초기화 로직 추가. <strong>코어 무수정.</strong></p></blockquote>
+<hr/>
+<h2>5. 대규모 트래픽 대응 설계 (핵심)</h2>
+<p>선착순 판매의 난이도는 <strong>동시성 × 폭주</strong>에 있다. 3단계 방어선을 둔다.</p>
+<h3>방어선 1 — 가상 대기열 (유입 평탄화)</h3>
+<ul>
+<li>판매 오픈 시 모든 사용자는 <strong>대기열 토큰</strong>을 먼저 받는다 (Redis Sorted Set, score=진입시각).</li>
+<li>서버는 초당 N명씩만 <strong>입장 허용(active token)</strong> → 코어/DB가 처리 가능한 양만 유입.</li>
+<li>사용자는 순번·예상 대기시간을 폴링/SSE로 안내받음.</li>
+<li>효과: 오픈 순간 100k 동시 요청 → 코어에는 초당 처리 가능량만 도달.</li>
+</ul>
+<h3>방어선 2 — 원자적 재고 차감 (초과 판매 0)</h3>
+<p>두 가지 전략을 계층적으로 제공(도메인/부하에 따라 선택):</p>
+<table>
+<thead><tr>
+<th>전략</th>
+<th>방법</th>
+<th>특징</th>
+</tr></thead><tbody>
+<tr>
+<td><strong>A. DB 비관적 락</strong></td>
+<td><code>SELECT ... FOR UPDATE</code> 후 <code>remaining--</code></td>
+<td>강한 정합성, 소규모/좌석지정에 적합</td>
+</tr>
+<tr>
+<td><strong>B. DB 원자 UPDATE</strong></td>
+<td><code>UPDATE ... SET remaining=remaining-1 WHERE remaining&gt;0</code> (영향행수 확인)</td>
+<td>락 경합↓, 단순</td>
+</tr>
+<tr>
+<td><strong>C. Redis 원자 차감</strong></td>
+<td>Lua script로 <code>재고 확인+차감+선점 등록</code>을 원자 실행</td>
+<td>초고성능, 대규모 선착순에 적합</td>
+</tr>
+</tbody></table>
+<blockquote><p>대규모 시나리오에서는 <strong>C(Redis Lua)</strong> 로 즉시 판정하고, 실제 DB 반영은 <strong>Worker가 이벤트 스트림을 소비하여 비동기 반영</strong>(write-behind)한다.</p></blockquote>
+<p>Redis Lua (개념):</p>
+<pre><code class="lang-lua">-- KEYS[1]=stock:{eventId}, KEYS[2]=hold:{eventId}:{userId}
+-- ARGV[1]=ttl(sec)
+if redis.call('EXISTS', KEYS[2]) == 1 then return -2 end   -- 중복 선점 방지
+local remaining = tonumber(redis.call('GET', KEYS[1]))
+if not remaining or remaining &lt;= 0 then return -1 end        -- 품절
+redis.call('DECR', KEYS[1])                                  -- 원자 차감
+redis.call('SET', KEYS[2], '1', 'EX', ARGV[1])              -- TTL 선점
+return remaining - 1</code></pre>
+<h3>방어선 3 — 선점 TTL + 보상 트랜잭션 (정합성)</h3>
+<ul>
+<li>선점(Hold)은 <strong>TTL(예: 5분)</strong> 을 가진다. 결제 미완료로 만료되면 <strong>재고 자동 복원</strong>.</li>
+<li>결제 흐름은 <strong>Saga(보상 트랜잭션)</strong>:</li>
+<ol>
+<li>Hold(재고 차감) → 2. Order 생성 → 3. Payment(Mock) →</li>
+</ol>
+<ul>
+<li>성공: Order CONFIRMED, Ticket 발권</li>
+<li>실패/타임아웃: 보상 이벤트 발행 → <strong>재고 복원 + Hold 해제</strong></li>
+</ul>
+<li>재고 차감과 이벤트 발행의 원자성은 <strong>Outbox 패턴</strong>으로 보장(같은 트랜잭션에 outbox insert).</li>
+</ul>
+<hr/>
+<h2>6. 핵심 시퀀스 — "좌석 선점 → 결제 → 발권"</h2>
+<pre><code>User        API(Core)        Redis           DB           Worker         Payment(Mock)
+ │  hold(seat) │               │              │              │                │
+ │────────────►│  Lua tryHold  │              │              │                │
+ │             │──────────────►│ (원자 차감+   │              │                │
+ │             │◄──────────────│  TTL 선점 OK) │              │                │
+ │             │  outbox+order (tx)           │              │                │
+ │             │─────────────────────────────►│(order=PENDING)              │
+ │◄────────────│  holdId, 남은시간            │              │                │
+ │  pay(order) │               │              │              │                │
+ │────────────►│               │              │              │  charge(mock)  │
+ │             │──────────────────────────────────────────────────────────►│
+ │             │◄──────────────────────────────────────────────────────────│(OK)
+ │             │  order=CONFIRMED (tx)        │              │                │
+ │             │─────────────────────────────►│              │                │
+ │             │  emit PaymentConfirmed ──────────────► stream ──► issue ticket
+ │◄────────────│  ticketCode                 │              │                │
+
+[타임아웃 시] Redis TTL 만료 → Worker가 HoldExpired 감지 → StockRestored 이벤트
+            → Redis 재고 +1, DB order=EXPIRED, 좌석 재판매 가능</code></pre>
+<hr/>
+<h2>7. 적용한 설계 원칙 (과제 평가 포인트)</h2>
+<h3>SOLID</h3>
+<ul>
+<li><strong>SRP:</strong> UseCase 서비스 1개 = 1 시나리오. Controller는 변환만.</li>
+<li><strong>OCP:</strong> 새 도메인/새 재고전략을 어댑터·전략 추가로 확장(코어 수정 X).</li>
+<li><strong>LSP:</strong> 모든 <code>DomainDescriptorPort</code> 구현은 동일 계약 준수.</li>
+<li><strong>ISP:</strong> Payment/Notification/Queue 포트를 잘게 분리.</li>
+<li><strong>DIP:</strong> 코어(고수준)가 인터페이스에 의존, 인프라(저수준)가 이를 구현.</li>
+</ul>
+<h3>GRASP</h3>
+<ul>
+<li><strong>Information Expert:</strong> 재고 판단은 <code>Inventory</code> 애그리거트가 책임.</li>
+<li><strong>Creator:</strong> <code>Ticket</code>은 확정된 <code>Order</code>가 생성.</li>
+<li><strong>Controller:</strong> UseCase 서비스가 시스템 오퍼레이션 조율.</li>
+<li><strong>Low Coupling / High Cohesion:</strong> 포트로 결합도↓, 레이어별 응집도↑.</li>
+<li><strong>Polymorphism:</strong> 도메인/재고전략을 다형성으로 분기.</li>
+<li><strong>Pure Fabrication:</strong> <code>StockRepositoryPort</code> 등은 도메인에 없는 순수 조립물.</li>
+</ul>
+<h3>Design Patterns (GoF 등)</h3>
+<table>
+<thead><tr>
+<th>패턴</th>
+<th>적용 위치</th>
+</tr></thead><tbody>
+<tr>
+<td><strong>Strategy</strong></td>
+<td>재고 차감 전략(DB락/원자UPDATE/RedisLua), 대기열 입장 정책</td>
+</tr>
+<tr>
+<td><strong>Adapter</strong></td>
+<td>Payment(Mock), Notification(Mock), 도메인 어댑터</td>
+</tr>
+<tr>
+<td><strong>Facade</strong></td>
+<td>결제 플로우(Hold+Order+Pay 오케스트레이션)</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>Order/Hold 상태 전이</td>
+</tr>
+<tr>
+<td><strong>Observer / Pub-Sub</strong></td>
+<td>도메인 이벤트(재고복원, 발권, 알림)</td>
+</tr>
+<tr>
+<td><strong>Template Method</strong></td>
+<td>판매 처리 공통 골격 + 도메인별 훅</td>
+</tr>
+<tr>
+<td><strong>Factory Method</strong></td>
+<td>Ticket 생성</td>
+</tr>
+<tr>
+<td><strong>Command</strong></td>
+<td>취소/환불 요청</td>
+</tr>
+</tbody></table>
+<blockquote><p>아키텍처 패턴: <strong>Saga(보상 트랜잭션)</strong>, <strong>Outbox</strong>, <strong>CQRS(경량)</strong>, <strong>Virtual Waiting Room</strong>.</p></blockquote>
+<hr/>
+<h2>8. 배포 뷰 (데모용)</h2>
+<pre><code>docker-compose:
+  - api          x N (수평 확장 데모, 무상태)
+  - worker       x M (이벤트 소비)
+  - postgres     x 1
+  - redis        x 1
+  - prometheus + grafana (지표)
+  - k6 (부하 시나리오: 오픈 순간 동시 접속)</code></pre>
+<p>부하 테스트 시나리오(예): 좌석 100석, 동시 사용자 5,000명 → <strong>판매 성공 정확히 100건, 초과 판매 0건, 오류율 &lt; 1%</strong> 를 검증.</p></section><section id="sec2" class="doc-section"><h1>도메인 모델 및 데이터 설계</h1>
+<blockquote><p>범용 선착순(FCFS) 판매 플랫폼 — 첫 도메인: 영화관 티켓 예매 범용 코어 모델과 영화관 도메인 매핑, ERD, 상태 전이를 정의한다.</p></blockquote>
+<hr/>
+<h2>1. 모델링 원칙</h2>
+<ul>
+<li><strong>범용 코어</strong>는 "판매 이벤트 / 재고 단위 / 선점 / 주문"이라는 <strong>도메인 중립 개념</strong>만 안다.</li>
+<li><strong>도메인(영화관)</strong> 은 코어 개념을 <strong>구체화</strong>한다: 판매이벤트=상영, 재고단위=좌석.</li>
+<li>코어 테이블과 도메인 테이블을 분리하고, <code>stock_unit</code>이 둘을 잇는 <strong>연결점</strong>이 된다.</li>
+</ul>
+<pre><code> [범용 코어 개념]            [영화관 도메인 개념]
+  SalesEvent      ◄────────►  Screening (상영 회차)
+  StockUnit       ◄────────►  Seat      (좌석)
+  Hold            (그대로)     좌석 임시 점유
+  Order / Payment (그대로)     예매 결제
+  Ticket          ◄────────►  MovieTicket (좌석/상영 정보 포함)</code></pre>
+<hr/>
+<h2>2. 범용 코어 도메인 모델</h2>
+<h3>2.1 주요 애그리거트/엔티티</h3>
+<table>
+<thead><tr>
+<th>개념</th>
+<th>설명</th>
+<th>핵심 속성</th>
+</tr></thead><tbody>
+<tr>
+<td><strong>SalesEvent</strong></td>
+<td>하나의 선착순 판매 단위(상영/공연회차/드롭)</td>
+<td>id, domainType, title, status, openAt, closeAt</td>
+</tr>
+<tr>
+<td><strong>Inventory</strong></td>
+<td>판매 이벤트의 재고 총괄</td>
+<td>salesEventId, totalQty, remainingQty(캐시 동기화)</td>
+</tr>
+<tr>
+<td><strong>StockUnit</strong></td>
+<td>개별 재고 단위(좌석/상품 옵션)</td>
+<td>id, salesEventId, code, status, version</td>
+</tr>
+<tr>
+<td><strong>Hold</strong></td>
+<td>재고 단위 임시 선점</td>
+<td>id, stockUnitId, userId, expiresAt, status</td>
+</tr>
+<tr>
+<td><strong>Order</strong></td>
+<td>구매 주문</td>
+<td>id, userId, salesEventId, amount, status</td>
+</tr>
+<tr>
+<td><strong>OrderLine</strong></td>
+<td>주문 항목(선점→확정)</td>
+<td>orderId, stockUnitId, holdId, price</td>
+</tr>
+<tr>
+<td><strong>Payment</strong></td>
+<td>결제(Mock)</td>
+<td>id, orderId, status, provider, paidAt</td>
+</tr>
+<tr>
+<td><strong>Ticket</strong></td>
+<td>발권 결과</td>
+<td>id, orderId, stockUnitId, code, issuedAt</td>
+</tr>
+<tr>
+<td><strong>User</strong></td>
+<td>구매자/판매자(어드민)</td>
+<td>id, email, role</td>
+</tr>
+<tr>
+<td><strong>OutboxEvent</strong></td>
+<td>이벤트 발행 원장</td>
+<td>id, type, payload, status, createdAt</td>
+</tr>
+</tbody></table>
+<h3>2.2 상태(enum)</h3>
+<ul>
+<li><code>SalesEvent.status</code>: <code>SCHEDULED</code> → <code>OPEN</code> → <code>CLOSED</code> / <code>SOLD_OUT</code></li>
+<li><code>StockUnit.status</code>: <code>AVAILABLE</code> → <code>HELD</code> → <code>SOLD</code> / (복원 시) <code>AVAILABLE</code></li>
+<li><code>Hold.status</code>: <code>ACTIVE</code> → <code>CONFIRMED</code> / <code>EXPIRED</code> / <code>RELEASED</code></li>
+<li><code>Order.status</code>: <code>PENDING</code> → <code>PAID</code>(=CONFIRMED) / <code>FAILED</code> / <code>EXPIRED</code> / <code>CANCELLED</code></li>
+<li><code>Payment.status</code>: <code>REQUESTED</code> → <code>APPROVED</code> / <code>DECLINED</code></li>
+</ul>
+<hr/>
+<h2>3. 영화관 도메인 모델 (첫 어댑터)</h2>
+<table>
+<thead><tr>
+<th>개념</th>
+<th>매핑</th>
+<th>핵심 속성</th>
+</tr></thead><tbody>
+<tr>
+<td><strong>Movie</strong></td>
+<td>부가</td>
+<td>id, title, runningTime, rating</td>
+</tr>
+<tr>
+<td><strong>Theater / Screen</strong></td>
+<td>상영관</td>
+<td>id, name, screenType(2D/IMAX), seatLayout</td>
+</tr>
+<tr>
+<td><strong>Screening</strong></td>
+<td>= SalesEvent</td>
+<td>id, movieId, screenId, startAt, salesEventId, price</td>
+</tr>
+<tr>
+<td><strong>Seat</strong></td>
+<td>= StockUnit</td>
+<td>id, screenId, row, col, seatType(일반/커플/장애인석)</td>
+</tr>
+<tr>
+<td><strong>MovieTicket</strong></td>
+<td>= Ticket 확장</td>
+<td>ticketId, screeningId, seatCode, entryCode(QR)</td>
+</tr>
+</tbody></table>
+<blockquote><p>좌석 지정 예매를 지원하므로 <code>DomainDescriptorPort.supportsSeatSelection()=true</code>. 한정판 상품 도메인(향후)은 <code>false</code>(선착순 수량만).</p></blockquote>
+<hr/>
+<h2>4. ERD (개념)</h2>
+<pre><code>User 1───∞ Order 1───∞ OrderLine ∞───1 StockUnit ∞───1 SalesEvent
+  │                     │                   │                 │
+  │                     1                   1                 1
+  │                  Payment              Hold            Inventory
+  │                                         
+  Order 1───∞ Ticket ∞───1 StockUnit
+
+[영화관 확장]
+Movie 1───∞ Screening ∞───1 Screen 1───∞ Seat
+Screening 1───1 SalesEvent   (매핑)
+Seat      1───1 StockUnit    (매핑)</code></pre>
+<h3>4.1 핵심 테이블 스키마 (PostgreSQL, 요약)</h3>
+<pre><code class="lang-sql">-- 범용 코어
+CREATE TABLE sales_event (
+    id           BIGSERIAL PRIMARY KEY,
+    domain_type  VARCHAR(20)  NOT NULL,        -- 'CINEMA' | 'CONCERT' | 'PRODUCT'
+    title        VARCHAR(200) NOT NULL,
+    status       VARCHAR(20)  NOT NULL DEFAULT 'SCHEDULED',
+    open_at      TIMESTAMPTZ  NOT NULL,
+    close_at     TIMESTAMPTZ,
+    total_qty    INT          NOT NULL,
+    remaining_qty INT         NOT NULL          -- DB 진실원본(캐시와 동기화)
+);
+
+CREATE TABLE stock_unit (
+    id            BIGSERIAL PRIMARY KEY,
+    sales_event_id BIGINT NOT NULL REFERENCES sales_event(id),
+    code          VARCHAR(40) NOT NULL,          -- 좌석코드 'A12' 등
+    status        VARCHAR(20) NOT NULL DEFAULT 'AVAILABLE',
+    version       INT         NOT NULL DEFAULT 0, -- 낙관적 락
+    UNIQUE (sales_event_id, code)                 -- 중복 좌석 방지
+);
+
+CREATE TABLE hold (
+    id            BIGSERIAL PRIMARY KEY,
+    stock_unit_id BIGINT NOT NULL REFERENCES stock_unit(id),
+    user_id       BIGINT NOT NULL,
+    status        VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    expires_at    TIMESTAMPTZ NOT NULL,
+    UNIQUE (stock_unit_id, status)                -- 동일 재고 중복 ACTIVE 방지(부분 인덱스로 강화)
+);
+
+CREATE TABLE orders (
+    id            BIGSERIAL PRIMARY KEY,
+    user_id       BIGINT NOT NULL,
+    sales_event_id BIGINT NOT NULL REFERENCES sales_event(id),
+    amount        NUMERIC(12,2) NOT NULL,
+    status        VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    idempotency_key VARCHAR(80) UNIQUE,            -- 중복요청 방지(멱등)
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE order_line (
+    id            BIGSERIAL PRIMARY KEY,
+    order_id      BIGINT NOT NULL REFERENCES orders(id),
+    stock_unit_id BIGINT NOT NULL REFERENCES stock_unit(id),
+    hold_id       BIGINT REFERENCES hold(id),
+    price         NUMERIC(12,2) NOT NULL
+);
+
+CREATE TABLE payment (
+    id        BIGSERIAL PRIMARY KEY,
+    order_id  BIGINT NOT NULL REFERENCES orders(id),
+    status    VARCHAR(20) NOT NULL DEFAULT 'REQUESTED',
+    provider  VARCHAR(20) NOT NULL DEFAULT 'MOCK',
+    paid_at   TIMESTAMPTZ
+);
+
+CREATE TABLE ticket (
+    id            BIGSERIAL PRIMARY KEY,
+    order_id      BIGINT NOT NULL REFERENCES orders(id),
+    stock_unit_id BIGINT NOT NULL REFERENCES stock_unit(id),
+    code          VARCHAR(60) UNIQUE NOT NULL,
+    issued_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE outbox_event (
+    id         BIGSERIAL PRIMARY KEY,
+    type       VARCHAR(50) NOT NULL,
+    payload    JSONB       NOT NULL,
+    status     VARCHAR(20) NOT NULL DEFAULT 'NEW',   -- NEW | SENT
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- 영화관 도메인
+CREATE TABLE movie (
+    id BIGSERIAL PRIMARY KEY, title VARCHAR(200), running_time INT, rating VARCHAR(10));
+CREATE TABLE screen (
+    id BIGSERIAL PRIMARY KEY, name VARCHAR(80), screen_type VARCHAR(20));
+CREATE TABLE seat (
+    id BIGSERIAL PRIMARY KEY, screen_id BIGINT REFERENCES screen(id),
+    row_label VARCHAR(3), col_no INT, seat_type VARCHAR(20),
+    stock_unit_id BIGINT REFERENCES stock_unit(id));   -- 매핑
+CREATE TABLE screening (
+    id BIGSERIAL PRIMARY KEY, movie_id BIGINT REFERENCES movie(id),
+    screen_id BIGINT REFERENCES screen(id), start_at TIMESTAMPTZ,
+    price NUMERIC(12,2), sales_event_id BIGINT REFERENCES sales_event(id)); -- 매핑</code></pre>
+<blockquote><p><strong>정합성 장치:</strong> <code>stock_unit</code>의 <code>UNIQUE(sales_event_id, code)</code>, <code>orders.idempotency_key UNIQUE</code>, <code>ticket.code UNIQUE</code>, <code>hold</code>의 ACTIVE 상태 부분 유니크 인덱스로 DB 레벨에서도 초과 판매/중복을 차단.</p></blockquote>
+<p>부분 유니크 인덱스 예:</p>
+<pre><code class="lang-sql">CREATE UNIQUE INDEX uq_hold_active
+    ON hold (stock_unit_id) WHERE status = 'ACTIVE';</code></pre>
+<hr/>
+<h2>5. 상태 전이 다이어그램</h2>
+<h3>5.1 StockUnit (좌석)</h3>
+<pre><code>        tryHold(성공)          payment 성공
+AVAILABLE ─────────► HELD ───────────────► SOLD
+    ▲                 │
+    │  TTL 만료 /      │
+    │  결제 실패 /     │
+    └── 취소(복원) ────┘</code></pre>
+<h3>5.2 Order</h3>
+<pre><code>PENDING ──pay 성공──► PAID ──발권──► (Ticket 생성)
+   │                    │
+   │ pay 실패/타임아웃    │ 사용자 취소
+   ▼                    ▼
+FAILED/EXPIRED       CANCELLED  ──► 재고 복원 이벤트</code></pre>
+<hr/>
+<h2>6. 대표 API (REST 초안)</h2>
+<table>
+<thead><tr>
+<th>Method</th>
+<th>Path</th>
+<th>설명</th>
+<th>관련 UC</th>
+</tr></thead><tbody>
+<tr>
+<td>GET</td>
+<td><code>/api/sales-events</code></td>
+<td>판매(상영) 목록/상세</td>
+<td>UC-1</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/queue/{eventId}/enter</code></td>
+<td>대기열 진입, 대기토큰 발급</td>
+<td>UC-2</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/queue/{eventId}/status</code></td>
+<td>순번/입장 가능 여부</td>
+<td>UC-2</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/events/{eventId}/holds</code></td>
+<td>재고(좌석) 선점 (입장토큰 필요)</td>
+<td>UC-3</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td><code>/api/holds/{holdId}</code></td>
+<td>선점 해제</td>
+<td>UC-3</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/orders</code></td>
+<td>주문 생성(선점→주문, 멱등키)</td>
+<td>UC-4</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/orders/{id}/pay</code></td>
+<td>결제(Mock) 요청</td>
+<td>UC-4</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/orders/{id}/ticket</code></td>
+<td>발권/티켓 조회</td>
+<td>UC-5</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/admin/sales-events</code></td>
+<td>판매(상영) 등록 (ADMIN)</td>
+<td>UC-6</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/orders/{id}/cancel</code></td>
+<td>취소/환불(Mock)</td>
+<td>UC-7</td>
+</tr>
+</tbody></table>
+<h3>요청 예시 — 좌석 선점</h3>
+<pre><code class="lang-http">POST /api/events/1001/holds
+Authorization: Bearer &lt;jwt&gt;
+X-Queue-Token: &lt;입장토큰&gt;
+Content-Type: application/json
+
+{ "stockUnitId": 55012 }     // 좌석 A12</code></pre>
+<p>응답:</p>
+<pre><code class="lang-json">{ "holdId": 88123, "stockUnitCode": "A12", "expiresInSeconds": 300, "remaining": 42 }</code></pre>
+<hr/>
+<h2>7. 확장 시나리오 (범용성 검증)</h2>
+<table>
+<thead><tr>
+<th>새 도메인</th>
+<th>SalesEvent</th>
+<th>StockUnit</th>
+<th>좌석지정</th>
+<th>추가 작업</th>
+</tr></thead><tbody>
+<tr>
+<td>영화관(구현)</td>
+<td>상영 회차</td>
+<td>좌석</td>
+<td>O</td>
+<td>CinemaAdapter</td>
+</tr>
+<tr>
+<td>공연 티켓(향후)</td>
+<td>공연 회차</td>
+<td>좌석/구역</td>
+<td>O</td>
+<td>ConcertAdapter</td>
+</tr>
+<tr>
+<td>한정판 상품(향후)</td>
+<td>드롭 이벤트</td>
+<td>상품 옵션(사이즈)</td>
+<td>X (수량만)</td>
+<td>ProductAdapter</td>
+</tr>
+</tbody></table>
+<p>세 경우 모두 <strong>코어(재고 차감/대기열/주문/결제) 코드는 동일</strong>하며, <code>DomainDescriptorPort</code> 구현과 초기 재고 세팅만 달라진다 → <strong>OCP/DIP 충족</strong>.</p></section><section id="sec3" class="doc-section"><h1>기술 스택 및 참조 시스템 조사</h1>
+<blockquote><p>범용 선착순(FCFS) 판매 플랫폼 — 사용 기술과 조사한 참조 아키텍처 정리 (제안서 6번 항목 상세 뒷받침 문서)</p></blockquote>
+<hr/>
+<h2>1. 참조 시스템 조사</h2>
+<h3>1.1 가상 대기열 (Virtual Waiting Room)</h3>
+<p>대규모 티켓팅/한정판 판매 시스템은 오픈 순간 트래픽 폭주를 견디기 위해 <strong>가상 대기열</strong>을 둔다. 사용자는 실제 판매 서버 앞에서 대기표를 받고, 서버가 처리 가능한 속도로만 순차 입장시킨다.</p>
+<ul>
+<li><strong>핵심 아이디어:</strong> 유입량(rate)을 제어해 백엔드가 감당 가능한 부하만 통과시킴.</li>
+<li><strong>본 프로젝트 차용:</strong> Redis Sorted Set으로 순번 관리, 초당 입장 허용량(admission rate) 설정.</li>
+</ul>
+<h3>1.2 인메모리 재고 관리 + write-behind</h3>
+<p>커머스/티켓팅에서 재고 판정을 매번 RDB에서 하면 락 경합으로 병목이 생긴다. 따라서 <strong>인메모리(Redis)에서 원자적으로 재고를 판정</strong>하고, 실제 DB 반영은 이벤트로 <strong>비동기 후행 처리(write-behind)</strong> 한다.</p>
+<ul>
+<li><strong>본 프로젝트 차용:</strong> Redis Lua로 재고 차감 즉시 판정 → 이벤트 → Worker가 DB 반영.</li>
+</ul>
+<h3>1.3 Saga / Outbox 패턴</h3>
+<p>분산·비동기 환경에서 "재고 차감"과 "결제"의 정합성을 트랜잭션 하나로 묶기 어렵다. <strong>Saga(보상 트랜잭션)</strong> 로 단계별 진행/롤백을 관리하고, 이벤트 발행 유실을 막기 위해 <strong>Outbox 패턴</strong>(같은 트랜잭션에서 이벤트를 outbox 테이블에 기록)을 쓴다.</p>
+<ul>
+<li><strong>본 프로젝트 차용:</strong> 결제 실패/만료 시 재고 복원을 보상 이벤트로 처리, Outbox로 발행 보장.</li>
+</ul>
+<hr/>
+<h2>2. 사용 기술 스택 및 선정 이유</h2>
+<table>
+<thead><tr>
+<th>계층</th>
+<th>기술</th>
+<th>선정 이유</th>
+<th>대안</th>
+</tr></thead><tbody>
+<tr>
+<td>Language</td>
+<td><strong>Java 17</strong> (또는 Kotlin)</td>
+<td>동시성/트랜잭션 학습자원 풍부</td>
+<td>Kotlin, Go</td>
+</tr>
+<tr>
+<td>Framework</td>
+<td><strong>Spring Boot 3</strong></td>
+<td>REST/JPA/트랜잭션/스케줄러 통합</td>
+<td>Micronaut, Quarkus</td>
+</tr>
+<tr>
+<td>ORM</td>
+<td><strong>Spring Data JPA</strong></td>
+<td>비관적/낙관적 락 지원, 생산성</td>
+<td>MyBatis, jOOQ</td>
+</tr>
+<tr>
+<td>RDB</td>
+<td><strong>PostgreSQL</strong></td>
+<td>강한 정합성, <code>SELECT FOR UPDATE</code>, 부분 유니크 인덱스, JSONB</td>
+<td>MySQL</td>
+</tr>
+<tr>
+<td>Cache/Lock/Queue</td>
+<td><strong>Redis</strong></td>
+<td>Lua 원자연산, 분산 락, Sorted Set 대기열, Stream</td>
+<td>Hazelcast</td>
+</tr>
+<tr>
+<td>Messaging</td>
+<td><strong>Redis Stream</strong> (기본), Kafka(선택)</td>
+<td>경량 이벤트 소비, 학습 난이도↓</td>
+<td>RabbitMQ, Kafka</td>
+</tr>
+<tr>
+<td>API 문서</td>
+<td><strong>springdoc-openapi (Swagger UI)</strong></td>
+<td>표준 API 스펙 자동화</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Auth</td>
+<td><strong>Spring Security + JWT</strong></td>
+<td>무상태 인증, 확장 용이</td>
+<td>세션</td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td><strong>React + Vite + TypeScript</strong></td>
+<td>대기열/좌석맵 데모 UI</td>
+<td>Vue</td>
+</tr>
+<tr>
+<td>Test</td>
+<td><strong>JUnit5, Testcontainers</strong></td>
+<td>실제 PG/Redis로 통합 테스트</td>
+<td>H2(단순)</td>
+</tr>
+<tr>
+<td>Load Test</td>
+<td><strong>k6</strong> (또는 JMeter)</td>
+<td>코드형 부하 시나리오, 동시성 재현</td>
+<td>Gatling</td>
+</tr>
+<tr>
+<td>Container</td>
+<td><strong>Docker Compose</strong></td>
+<td>다중 인스턴스·의존성 로컬 재현</td>
+<td>k8s(과함)</td>
+</tr>
+<tr>
+<td>Observability</td>
+<td><strong>Micrometer + Prometheus + Grafana</strong></td>
+<td>재고/대기열/오류 지표 시각화</td>
+<td>ELK</td>
+</tr>
+</tbody></table>
+<hr/>
+<h2>3. 조사 시스템에서 실제 사용할 부분(계획)</h2>
+<table>
+<thead><tr>
+<th>참조 개념</th>
+<th>본 프로젝트 적용 모듈</th>
+<th>구현 방식</th>
+</tr></thead><tbody>
+<tr>
+<td>Virtual Waiting Room</td>
+<td><code>WaitingQueueService</code></td>
+<td>Redis Sorted Set + 입장 토큰</td>
+</tr>
+<tr>
+<td>In-memory stock</td>
+<td><code>RedisStockAdapter</code></td>
+<td>Lua script 원자 차감</td>
+</tr>
+<tr>
+<td>write-behind</td>
+<td><code>StockSyncWorker</code></td>
+<td>Stream 소비 → DB 반영</td>
+</tr>
+<tr>
+<td>Saga</td>
+<td><code>OrderSaga</code> (Application Layer)</td>
+<td>상태 기반 오케스트레이션</td>
+</tr>
+<tr>
+<td>Outbox</td>
+<td><code>outbox_event</code> 테이블 + <code>OutboxRelay</code></td>
+<td>tx 내 기록 → 폴링 발행</td>
+</tr>
+<tr>
+<td>Distributed Lock</td>
+<td><code>RedisLockAdapter</code></td>
+<td>SET NX PX / Redisson(선택)</td>
+</tr>
+</tbody></table>
+<hr/>
+<h2>4. 검증 계획 (부하·정확성)</h2>
+<ul>
+<li><strong>정확성 테스트:</strong> 좌석 100석에 동시 사용자 5,000명 → 성공 정확히 100, 초과 0.</li>
+<li><strong>부하 테스트(k6):</strong> 오픈 순간 VU 5,000, ramp-up 10s → p95 지연/오류율 측정.</li>
+<li><strong>장애 주입:</strong> 결제 Mock을 랜덤 실패/지연시켜 보상 트랜잭션·재고 복원 검증.</li>
+<li><strong>수평 확장:</strong> api 인스턴스 1→3 확장 시 처리량 증가 관측(무상태 확인).</li>
+</ul>
+<hr/>
+<h2>5. Reference</h2>
+<ol>
+<li>AWS Solutions — <em>Virtual Waiting Room on AWS</em>. https://aws.amazon.com/solutions/implementations/virtual-waiting-room-on-aws/</li>
+<li>Redis Docs — <em>Distributed Locks (Redlock)</em>, <em>Lua scripting</em>, <em>Streams</em>. https://redis.io/docs/</li>
+<li>Chris Richardson — <em>Microservices Patterns</em> (Saga, Outbox, CQRS), Manning.</li>
+<li>Spring — <em>Transaction Management &amp; Locking</em>. https://docs.spring.io/spring-framework/reference/data-access/transaction.html</li>
+<li>Martin Fowler — <em>CQRS</em>, <em>Event-Driven Architecture</em>. https://martinfowler.com/</li>
+<li>PostgreSQL Docs — <em>Explicit Locking / Partial Indexes</em>. https://www.postgresql.org/docs/</li>
+</ol>
+<blockquote><p>※ 각 URL 접속일과 판본은 최종 제출 시 확정하세요. 내용은 라이선스 준수를 위해 요약·재구성했습니다.</p></blockquote></section>
+</body>
+</html>
