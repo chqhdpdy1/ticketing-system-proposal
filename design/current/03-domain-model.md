@@ -1,251 +1,165 @@
-# 도메인 모델 및 데이터 설계
+# 도메인 모델·데이터 계약 v2.0
 
-> 범용 선착순(FCFS) 판매 플랫폼 — 첫 도메인: 영화관 티켓 예매
-> 범용 코어 모델과 영화관 도메인 매핑, ERD, 상태 전이를 정의한다.
+## 1. 개념
 
----
+- SalesEvent: 판매 이벤트. OPEN/CLOSED 등 판매 가능 여부를 가진다.
+- StockUnit: **한 번에 한 명에게 판매하는 개별 단위**. 영화관에서는 특정 회차의 특정 좌석이다. SKU 수량 묶음이 아니다.
+- Hold: StockUnit의 소유자·만료시각·선점 이력.
+- Order: Hold 하나에서 만들어지는 주문. v2는 주문당 한 좌석이다.
+- Payment: 주문당 최종 Mock 결제 결과 하나.
+- Ticket: 결제와 같은 트랜잭션에서 생성하는 발권 결과.
+- ScreeningSeat: 물리 좌석과 회차별 StockUnit의 매핑.
 
-## 1. 모델링 원칙
+잔여 수량은 StockUnit 상태의 집계다. 별도 remaining_qty 쓰기 원장을 두지 않는다. 조회 캐시는 지연될 수 있으며 명령 판정에 사용하지 않는다. 일시적 잔여 0을 영구 SOLD_OUT 상태로 저장하지 않는다.
 
-- **범용 코어**는 "판매 이벤트 / 재고 단위 / 선점 / 주문"이라는 **도메인 중립 개념**만 안다.
-- **도메인(영화관)** 은 코어 개념을 **구체화**한다: 판매이벤트=상영, 재고단위=좌석.
-- 코어 테이블과 도메인 테이블을 분리하고, `stock_unit`이 둘을 잇는 **연결점**이 된다.
-
-```
- [범용 코어 개념]            [영화관 도메인 개념]
-  SalesEvent      ◄────────►  Screening (상영 회차)
-  StockUnit       ◄────────►  Seat      (좌석)
-  Hold            (그대로)     좌석 임시 점유
-  Order / Payment (그대로)     예매 결제
-  Ticket          ◄────────►  MovieTicket (좌석/상영 정보 포함)
-```
-
----
-
-## 2. 범용 코어 도메인 모델
-
-### 2.1 주요 애그리거트/엔티티
-
-| 개념 | 설명 | 핵심 속성 |
-|------|------|-----------|
-| **SalesEvent** | 하나의 선착순 판매 단위(상영/공연회차/드롭) | id, domainType, title, status, openAt, closeAt |
-| **Inventory** | 판매 이벤트의 재고 총괄 | salesEventId, totalQty, remainingQty(캐시 동기화) |
-| **StockUnit** | 개별 재고 단위(좌석/상품 옵션) | id, salesEventId, code, status, version |
-| **Hold** | 재고 단위 임시 선점 | id, stockUnitId, userId, expiresAt, status |
-| **Order** | 구매 주문 | id, userId, salesEventId, amount, status |
-| **OrderLine** | 주문 항목(선점→확정) | orderId, stockUnitId, holdId, price |
-| **Payment** | 결제(Mock) | id, orderId, status, provider, paidAt |
-| **Ticket** | 발권 결과 | id, orderId, stockUnitId, code, issuedAt |
-| **User** | 구매자/판매자(어드민) | id, email, role |
-| **OutboxEvent** | 이벤트 발행 원장 | id, type, payload, status, createdAt |
-
-### 2.2 상태(enum)
-
-- `SalesEvent.status`: `SCHEDULED` → `OPEN` → `CLOSED` / `SOLD_OUT`
-- `StockUnit.status`: `AVAILABLE` → `HELD` → `SOLD` / (복원 시) `AVAILABLE`
-- `Hold.status`: `ACTIVE` → `CONFIRMED` / `EXPIRED` / `RELEASED`
-- `Order.status`: `PENDING` → `PAID`(=CONFIRMED) / `FAILED` / `EXPIRED` / `CANCELLED`
-- `Payment.status`: `REQUESTED` → `APPROVED` / `DECLINED`
-
----
-
-## 3. 영화관 도메인 모델 (첫 어댑터)
-
-| 개념 | 매핑 | 핵심 속성 |
-|------|------|-----------|
-| **Movie** | 부가 | id, title, runningTime, rating |
-| **Theater / Screen** | 상영관 | id, name, screenType(2D/IMAX), seatLayout |
-| **Screening** | = SalesEvent | id, movieId, screenId, startAt, salesEventId, price |
-| **Seat** | = StockUnit | id, screenId, row, col, seatType(일반/커플/장애인석) |
-| **MovieTicket** | = Ticket 확장 | ticketId, screeningId, seatCode, entryCode(QR) |
-
-> 좌석 지정 예매를 지원하므로 `DomainDescriptorPort.supportsSeatSelection()=true`.
-> 한정판 상품 도메인(향후)은 `false`(선착순 수량만).
-
----
-
-## 4. ERD (개념)
-
-```
-User 1───∞ Order 1───∞ OrderLine ∞───1 StockUnit ∞───1 SalesEvent
-  │                     │                   │                 │
-  │                     1                   1                 1
-  │                  Payment              Hold            Inventory
-  │                                         
-  Order 1───∞ Ticket ∞───1 StockUnit
-
-[영화관 확장]
-Movie 1───∞ Screening ∞───1 Screen 1───∞ Seat
-Screening 1───1 SalesEvent   (매핑)
-Seat      1───1 StockUnit    (매핑)
+```mermaid
+erDiagram
+  SALES_EVENT ||--o{ STOCK_UNIT : contains
+  STOCK_UNIT ||--o{ HOLD : history
+  HOLD ||--o| ORDERS : creates
+  ORDERS ||--o| PAYMENT : result
+  ORDERS ||--o| TICKET : issues
+  SCREEN ||--o{ SEAT : physical
+  SCREEN ||--o{ SCREENING : hosts
+  MOVIE ||--o{ SCREENING : schedules
+  SALES_EVENT ||--o| SCREENING : maps
+  SCREENING ||--o{ SCREENING_SEAT : offers
+  SEAT ||--o{ SCREENING_SEAT : reused
+  STOCK_UNIT ||--o| SCREENING_SEAT : maps
 ```
 
-### 4.1 핵심 테이블 스키마 (PostgreSQL, 요약)
+## 2. 상태와 불변식
+
+| 대상 | 전이 |
+|---|---|
+| StockUnit | AVAILABLE → HELD → SOLD / HELD → AVAILABLE |
+| Hold | ACTIVE → CONFIRMED / EXPIRED / RELEASED |
+| Order | PENDING → PAID / FAILED / EXPIRED / CANCELLED |
+| Payment | 최종 APPROVED / DECLINED 기록 |
+| Ticket | ACTIVE만 사용; 환불 상태는 후속 설계 |
+
+1. 한 StockUnit의 ACTIVE Hold는 최대 하나.
+2. 사용자당 이벤트별 ACTIVE Hold 최대 하나. 만료시각만 지났다고 인덱스에서 제외되지 않으므로 신규 선점 전 기존 만료 Hold를 정리한다.
+3. HELD이면 ACTIVE Hold가 하나, SOLD이면 CONFIRMED Hold와 PAID Order가 하나다.
+4. 한 Hold에 Order 최대 하나. PAID Order는 APPROVED Payment와 Ticket을 가진다.
+5. CONFIRMED Hold를 만료·해제로 되돌리지 않는다. 결제 완료 취소·재판매는 v2 범위 밖이다.
+6. Order/Hold/StockUnit의 소유자·이벤트·좌석 관계가 일치해야 한다.
+
+행 간 불변식은 UNIQUE 하나로 전부 보장되지 않는다. 모든 쓰기 경로가 02 문서의 잠금·트랜잭션 계약을 따라야 하며 DB 불변식 조회로 검증한다.
+
+## 3. 핵심 SQL 계약
+
+아래는 **핵심 제약 설계 예시**다. 사용자·영화관 전체 DDL이나 실행 완료된 Flyway 마이그레이션이 아니다. 구현 시 PK/FK·상태 CHECK·인덱스·트랜잭션을 통합 검증한다.
 
 ```sql
--- 범용 코어
 CREATE TABLE sales_event (
-    id           BIGSERIAL PRIMARY KEY,
-    domain_type  VARCHAR(20)  NOT NULL,        -- 'CINEMA' | 'CONCERT' | 'PRODUCT'
-    title        VARCHAR(200) NOT NULL,
-    status       VARCHAR(20)  NOT NULL DEFAULT 'SCHEDULED',
-    open_at      TIMESTAMPTZ  NOT NULL,
-    close_at     TIMESTAMPTZ,
-    total_qty    INT          NOT NULL,
-    remaining_qty INT         NOT NULL          -- DB 진실원본(캐시와 동기화)
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  domain_type VARCHAR(20) NOT NULL,
+  title VARCHAR(200) NOT NULL,
+  status VARCHAR(20) NOT NULL CHECK (status IN ('SCHEDULED','OPEN','CLOSED')),
+  open_at TIMESTAMPTZ NOT NULL,
+  close_at TIMESTAMPTZ NOT NULL,
+  queue_epoch BIGINT NOT NULL DEFAULT 1,
+  CHECK (open_at < close_at)
 );
-
 CREATE TABLE stock_unit (
-    id            BIGSERIAL PRIMARY KEY,
-    sales_event_id BIGINT NOT NULL REFERENCES sales_event(id),
-    code          VARCHAR(40) NOT NULL,          -- 좌석코드 'A12' 등
-    status        VARCHAR(20) NOT NULL DEFAULT 'AVAILABLE',
-    version       INT         NOT NULL DEFAULT 0, -- 낙관적 락
-    UNIQUE (sales_event_id, code)                 -- 중복 좌석 방지
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  sales_event_id BIGINT NOT NULL REFERENCES sales_event(id),
+  code VARCHAR(80) NOT NULL,
+  price NUMERIC(12,2) NOT NULL CHECK (price >= 0),
+  status VARCHAR(20) NOT NULL CHECK (status IN ('AVAILABLE','HELD','SOLD')),
+  UNIQUE (sales_event_id, code),
+  UNIQUE (id, sales_event_id)
 );
-
 CREATE TABLE hold (
-    id            BIGSERIAL PRIMARY KEY,
-    stock_unit_id BIGINT NOT NULL REFERENCES stock_unit(id),
-    user_id       BIGINT NOT NULL,
-    status        VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
-    expires_at    TIMESTAMPTZ NOT NULL,
-    UNIQUE (stock_unit_id, status)                -- 동일 재고 중복 ACTIVE 방지(부분 인덱스로 강화)
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  stock_unit_id BIGINT NOT NULL,
+  sales_event_id BIGINT NOT NULL,
+  user_id BIGINT NOT NULL,
+  status VARCHAR(20) NOT NULL CHECK (status IN ('ACTIVE','CONFIRMED','EXPIRED','RELEASED')),
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
+  FOREIGN KEY (stock_unit_id, sales_event_id)
+    REFERENCES stock_unit(id, sales_event_id),
+  CHECK (expires_at > created_at)
 );
+CREATE UNIQUE INDEX uq_hold_active_stock ON hold(stock_unit_id)
+  WHERE status = 'ACTIVE';
+CREATE UNIQUE INDEX uq_hold_active_user_event ON hold(user_id, sales_event_id)
+  WHERE status = 'ACTIVE';
+CREATE UNIQUE INDEX uq_hold_confirmed_stock ON hold(stock_unit_id)
+  WHERE status = 'CONFIRMED';
+CREATE INDEX ix_hold_expiry ON hold(expires_at, id) WHERE status = 'ACTIVE';
 
 CREATE TABLE orders (
-    id            BIGSERIAL PRIMARY KEY,
-    user_id       BIGINT NOT NULL,
-    sales_event_id BIGINT NOT NULL REFERENCES sales_event(id),
-    amount        NUMERIC(12,2) NOT NULL,
-    status        VARCHAR(20) NOT NULL DEFAULT 'PENDING',
-    idempotency_key VARCHAR(80) UNIQUE,            -- 중복요청 방지(멱등)
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  hold_id BIGINT NOT NULL UNIQUE REFERENCES hold(id),
+  amount NUMERIC(12,2) NOT NULL CHECK (amount >= 0),
+  status VARCHAR(20) NOT NULL CHECK (status IN ('PENDING','PAID','FAILED','EXPIRED','CANCELLED')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
 );
-
-CREATE TABLE order_line (
-    id            BIGSERIAL PRIMARY KEY,
-    order_id      BIGINT NOT NULL REFERENCES orders(id),
-    stock_unit_id BIGINT NOT NULL REFERENCES stock_unit(id),
-    hold_id       BIGINT REFERENCES hold(id),
-    price         NUMERIC(12,2) NOT NULL
-);
-
 CREATE TABLE payment (
-    id        BIGSERIAL PRIMARY KEY,
-    order_id  BIGINT NOT NULL REFERENCES orders(id),
-    status    VARCHAR(20) NOT NULL DEFAULT 'REQUESTED',
-    provider  VARCHAR(20) NOT NULL DEFAULT 'MOCK',
-    paid_at   TIMESTAMPTZ
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  order_id BIGINT NOT NULL UNIQUE REFERENCES orders(id),
+  status VARCHAR(20) NOT NULL CHECK (status IN ('APPROVED','DECLINED')),
+  provider VARCHAR(20) NOT NULL CHECK (provider = 'MOCK'),
+  decided_at TIMESTAMPTZ NOT NULL
 );
-
 CREATE TABLE ticket (
-    id            BIGSERIAL PRIMARY KEY,
-    order_id      BIGINT NOT NULL REFERENCES orders(id),
-    stock_unit_id BIGINT NOT NULL REFERENCES stock_unit(id),
-    code          VARCHAR(60) UNIQUE NOT NULL,
-    issued_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  order_id BIGINT NOT NULL UNIQUE REFERENCES orders(id),
+  code UUID NOT NULL UNIQUE,
+  issued_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
 );
-
-CREATE TABLE outbox_event (
-    id         BIGSERIAL PRIMARY KEY,
-    type       VARCHAR(50) NOT NULL,
-    payload    JSONB       NOT NULL,
-    status     VARCHAR(20) NOT NULL DEFAULT 'NEW',   -- NEW | SENT
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
--- 영화관 도메인
-CREATE TABLE movie (
-    id BIGSERIAL PRIMARY KEY, title VARCHAR(200), running_time INT, rating VARCHAR(10));
-CREATE TABLE screen (
-    id BIGSERIAL PRIMARY KEY, name VARCHAR(80), screen_type VARCHAR(20));
-CREATE TABLE seat (
-    id BIGSERIAL PRIMARY KEY, screen_id BIGINT REFERENCES screen(id),
-    row_label VARCHAR(3), col_no INT, seat_type VARCHAR(20),
-    stock_unit_id BIGINT REFERENCES stock_unit(id));   -- 매핑
-CREATE TABLE screening (
-    id BIGSERIAL PRIMARY KEY, movie_id BIGINT REFERENCES movie(id),
-    screen_id BIGINT REFERENCES screen(id), start_at TIMESTAMPTZ,
-    price NUMERIC(12,2), sales_event_id BIGINT REFERENCES sales_event(id)); -- 매핑
 ```
 
-> **정합성 장치:** `stock_unit`의 `UNIQUE(sales_event_id, code)`,
-> `orders.idempotency_key UNIQUE`, `ticket.code UNIQUE`,
-> `hold`의 ACTIVE 상태 부분 유니크 인덱스로 DB 레벨에서도 초과 판매/중복을 차단.
+Order의 사용자·이벤트·StockUnit은 Hold 관계에서 얻어 중복 불일치를 줄인다. 사용자 FK는 실제 app_user 테이블 도입 시 추가한다. v2에서 OrderLine은 제거한다. 여러 좌석 주문은 HoldGroup/OrderLine을 별도 설계한 후 도입한다.
 
-부분 유니크 인덱스 예:
-```sql
-CREATE UNIQUE INDEX uq_hold_active
-    ON hold (stock_unit_id) WHERE status = 'ACTIVE';
-```
+### 영화관 매핑
 
----
+- Seat: `(screen_id, row_label, col_no)` UNIQUE. 물리 좌석은 회차에 독립적이다.
+- Screening: `sales_event_id` UNIQUE NOT NULL, movie_id, screen_id, start_at.
+- ScreeningSeat: screening_id, seat_id, stock_unit_id. `(screening_id, seat_id)` UNIQUE, stock_unit_id UNIQUE.
+- Seat가 Screening과 같은 Screen에 속하는지, StockUnit의 event가 Screening의 event인지 등록 트랜잭션에서 검증한다. 구현 마이그레이션에서는 screen_id/event_id를 포함한 복합 FK로 강화한다.
+- 하나의 물리 좌석은 서로 다른 회차의 StockUnit 여러 개와 연결된다. `seat.stock_unit_id`는 두지 않는다.
+- 상영 오픈 이전에 매핑·가격·재고 생성을 한 트랜잭션으로 끝내고 오픈 이후 수정 금지.
 
-## 5. 상태 전이 다이어그램
+### 멱등 요청
 
-### 5.1 StockUnit (좌석)
+`idempotency_request(user_id, operation, key, request_hash, response_status, response_body, created_at)`를 두며 `(user_id, operation, key)` UNIQUE. 인증된 사용자·작업 종류별 키다.
 
-```
-        tryHold(성공)          payment 성공
-AVAILABLE ─────────► HELD ───────────────► SOLD
-    ▲                 │
-    │  TTL 만료 /      │
-    │  결제 실패 /     │
-    └── 취소(복원) ────┘
-```
+요청 기록 생성·잠금은 비즈니스 행 잠금 전에 수행한다. 중복 동시 요청은 기존 행의 완료를 기다린 뒤 저장 응답을 반환한다. 같은 키·다른 payload는 409. 성공 응답 저장과 거래 변경을 같은 트랜잭션으로 커밋하고, 롤백되면 둘 다 사라진다. 업무상 거절 응답을 저장할 때도 같은 규칙을 적용한다. v2는 자동 삭제하지 않아 실행 기간 동안 재시도를 보장한다. payload 해시에는 대상 ID와 Mock 시나리오 등 의미 있는 입력을 모두 포함한다.
 
-### 5.2 Order
+사용자당 ACTIVE Hold UNIQUE 충돌은 다른 좌석을 먼저 잠근 두 요청 사이에서도 발생할 수 있다. 제약 충돌 시 전체 롤백한 뒤 별도 조회로 기존 Hold를 안내한다. 기존 Hold 정리는 다른 좌석 잠금을 잡기 전 별도 트랜잭션으로 수행하고, 최종 선점에서는 제약으로 다시 방어한다.
 
-```
-PENDING ──pay 성공──► PAID ──발권──► (Ticket 생성)
-   │                    │
-   │ pay 실패/타임아웃    │ 사용자 취소
-   ▼                    ▼
-FAILED/EXPIRED       CANCELLED  ──► 재고 복원 이벤트
-```
+### Outbox
 
----
+`outbox_event(id UUID PK, aggregate_id, type, payload JSONB, status, attempts, next_attempt_at, lease_until, last_error, created_at, processed_at)`.
 
-## 6. 대표 API (REST 초안)
+소비자 측 `processed_event(consumer_name, event_id)` 복합 PK로 중복 효과를 제어한다. 이 테이블만으로 외부 알림의 exactly-once가 보장되는 것은 아니다.
 
-| Method | Path | 설명 | 관련 UC |
-|--------|------|------|---------|
-| GET | `/api/sales-events` | 판매(상영) 목록/상세 | UC-1 |
-| POST | `/api/queue/{eventId}/enter` | 대기열 진입, 대기토큰 발급 | UC-2 |
-| GET | `/api/queue/{eventId}/status` | 순번/입장 가능 여부 | UC-2 |
-| POST | `/api/events/{eventId}/holds` | 재고(좌석) 선점 (입장토큰 필요) | UC-3 |
-| DELETE | `/api/holds/{holdId}` | 선점 해제 | UC-3 |
-| POST | `/api/orders` | 주문 생성(선점→주문, 멱등키) | UC-4 |
-| POST | `/api/orders/{id}/pay` | 결제(Mock) 요청 | UC-4 |
-| GET | `/api/orders/{id}/ticket` | 발권/티켓 조회 | UC-5 |
-| POST | `/api/admin/sales-events` | 판매(상영) 등록 (ADMIN) | UC-6 |
-| POST | `/api/orders/{id}/cancel` | 취소/환불(Mock) | UC-7 |
+## 4. REST API
 
-### 요청 예시 — 좌석 선점
+| Method | Path | 계약 |
+|---|---|---|
+| GET | /api/events | 상영·판매 목록 |
+| GET | /api/events/{eventId} | 상세·좌석 상태; 조회는 순간 스냅샷 |
+| POST | /api/events/{eventId}/queue | 대기표 생성 또는 기존 표 반환 |
+| GET | /api/events/{eventId}/queue/me | 본인 순번·입장권 상태 |
+| POST | /api/events/{eventId}/holds | stockUnitId, 입장권, Idempotency-Key 필수 |
+| GET | /api/holds/{holdId} | 본인 선점·expiresAt 조회 |
+| DELETE | /api/holds/{holdId} | 본인 미결제 선점 해제; 반복은 무효과 |
+| POST | /api/orders | holdId와 Idempotency-Key 필수 |
+| POST | /api/orders/{orderId}/pay | Idempotency-Key; 로컬 Mock 결제 |
+| GET | /api/orders/{orderId} | 본인 결제 결과 조회 |
+| GET | /api/orders/{orderId}/ticket | 본인 티켓 조회 |
+| POST | /api/admin/screenings | ADMIN, 회차별 재고 등록 |
 
-```http
-POST /api/events/1001/holds
-Authorization: Bearer <jwt>
-X-Queue-Token: <입장토큰>
-Content-Type: application/json
+선점 응답 예: `{"holdId":88123,"stockUnitId":55012,"expiresAt":"2026-10-31T03:05:00Z"}`.
+서버 시간이 권위이며 클라이언트 카운트다운은 표시용이다.
 
-{ "stockUnitId": 55012 }     // 좌석 A12
-```
-응답:
-```json
-{ "holdId": 88123, "stockUnitCode": "A12", "expiresInSeconds": 300, "remaining": 42 }
-```
+400 입력 오류 / 401 미인증 / 403 권한 없음 / 404 미존재 / 409 충돌·멱등키 불일치 / 410 만료 / 429 제한 / 503 의존성·잠금 일시 장애를 구분한다. 타인 리소스 존재 노출을 막도록 소유권 실패의 외부 응답 정책은 일관되게 적용한다.
 
----
+## 5. 후속 확장
 
-## 7. 확장 시나리오 (범용성 검증)
-
-| 새 도메인 | SalesEvent | StockUnit | 좌석지정 | 추가 작업 |
-|-----------|-----------|-----------|----------|-----------|
-| 영화관(구현) | 상영 회차 | 좌석 | O | CinemaAdapter |
-| 공연 티켓(향후) | 공연 회차 | 좌석/구역 | O | ConcertAdapter |
-| 한정판 상품(향후) | 드롭 이벤트 | 상품 옵션(사이즈) | X (수량만) | ProductAdapter |
-
-세 경우 모두 **코어(재고 차감/대기열/주문/결제) 코드는 동일**하며,
-`DomainDescriptorPort` 구현과 초기 재고 세팅만 달라진다 → **OCP/DIP 충족**.
+지정 단위 도메인에는 현 모델 재사용 가능성을 계약 테스트한다. 수량 상품은 SKU·quantity·부분 주문·동시 수량 차감 문제를 추가로 가지므로 현재 StockUnit에 이름만 붙여 지원한다고 주장하지 않는다. 결제 후 취소·재판매도 CONFIRMED 제약과 Ticket 무효화·환불 거래를 함께 다시 설계해야 한다.
