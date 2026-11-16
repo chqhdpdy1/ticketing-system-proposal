@@ -1,8 +1,8 @@
-# 프로젝트 진행 상태 — 설계 v3
+# 프로젝트 진행 상태 — 설계 v4
 
-[현재 설계 및 HW3 원고](design/current/06-reusable-sales-engine-v3.md)를 구현 기준으로 사용합니다. v2 브랜치와 기존 문서는 설계 이력을 제공합니다.
+[현재 설계 및 HW3 원고](design/current/07-final-design-report-v4.md)를 구현 기준으로 사용합니다. v2 브랜치와 기존 문서는 설계 이력을 제공합니다.
 
-- 완료 · HW1 제안서, v2 DB-first 설계, v3 수량형 공통 엔진 설계 및 HW3 원고.
+- 완료 · HW1 제안서, v2 DB-first 설계, v4 수량형 공통 엔진 설계 및 HW3 원고.
 - 예정 · UML 배치도 렌더링과 제출 PDF 편집, 애플리케이션 구현과 검증.
 - 아키텍처 · Spring Boot 모듈러 모놀리스, PostgreSQL 거래 원장, Redis 대기열, 로컬 Mock 결제, DB Outbox.
 - 시연 · 총량 1의 영화 좌석과 총량 N의 굿즈 옵션에서 동일한 선점·주문 API를 사용합니다.
